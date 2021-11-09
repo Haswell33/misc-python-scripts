@@ -1,4 +1,9 @@
 # misc-python-scripts
-<code>checksum-md5.py</code>
+### checksum-md5
+- <code>checksum-md5.py</code> checks the checksum</br>
 
-- checks the checksum
+### file-observer
+- <code>keepass-observer.py</code> updates the selected local file every time it is modified to the target ftp server</br>
+- <code>keepass-downloader.py</code> checks the local file being examined for a newer version (earlier modified date than local file) on the target ftp server
+- Scripts should be configured in the task scheduler to trigger each time the user logs on to the system, or in the case also when the computer wakes up after sleep
+
