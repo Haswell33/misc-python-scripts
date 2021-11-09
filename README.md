@@ -1,6 +1,6 @@
 # misc-python-scripts
 ### checksum-md5
-- <code>checksum-md5.py</code> checks the checksum</br>
+- <code>checksum-md5.py</code> checks the checksum of specified file</br>
 
 ### file-observer
 - <code>keepass-observer.py</code> updates the selected local file every time it is modified to the target ftp server</br>
