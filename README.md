@@ -1,4 +1,4 @@
-# misc-python-scripts
+# python-scripts
 ### checksum-md5
 - <code>checksum-md5.py</code> checks the checksum of specified file</br>
 
