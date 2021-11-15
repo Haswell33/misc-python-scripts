@@ -23,22 +23,21 @@ class MonitorFile(FileSystemEventHandler):
 
     def on_modified(self, event):
         super(MonitorFile, self).on_modified(event)
-        # if '.kdbx' in filename:  # not event.src_path.endswith(filename) because keepass makes update in 1 hour cycle for no reason, but without cache value on the end of filename, this is test condition
-        # if filename in event.src_path and not event.src_path.endswith(filename):
-        if filename in event.src_path:
-        #        save_to_ftp(ftp_host, ftp_user, ftp_pass, ftp_dir, filename)
-        #        logging.info(f'[LOCAL->FTP] path={filename}; ftpHost={ftp_host}; event_type={event.event_type}; cache_value={event.src_path.rsplit(".", 1)[-1]}')
-        #    else:
-        #        logging.info(f'{filename} has triggered on_modified event, but was not modified')  # for test
-        # else:  # common situation
-            save_to_ftp(ftp_host, ftp_user, ftp_pass, ftp_dir, filename)
+        if '.kdbx' in filename:  # not event.src_path.endswith(filename) because keepass makes update in 1 hour cycle for no reason, but without cache value on the end of filename, this is test condition
+            if filename in event.src_path and not event.src_path.endswith(filename):
+                save_to_ftp(ftp_host, ftp_user, ftp_pass, ftp_dir, filename, path_to_file)
+                logging.info(f'[LOCAL->FTP] path={filename}; ftpHost={ftp_host}; event_type={event.event_type}; cache_value={event.src_path.rsplit(".", 1)[-1]}')
+            else:
+                logging.info(f'{filename} has triggered on_modified event, but was not modified')  # for test
+        else:  # common situation
+            save_to_ftp(ftp_host, ftp_user, ftp_pass, ftp_dir, filename, path_to_file)
             logging.info(f'[LOCAL->FTP] path={filename}; ftpHost={ftp_host}; event_type={event.event_type}; cache_value={event.src_path.rsplit(".", 1)[-1]}')
 
     def on_deleted(self, event):
         super(MonitorFile, self).on_deleted(event)
 
 
-def save_to_ftp(ftp_host, ftp_user, ftp_pass, ftp_dir, filename):
+def save_to_ftp(ftp_host, ftp_user, ftp_pass, ftp_dir, filename, path_to_file):
     directories = ftp_dir.split('/')
     ftp_session = _get_ftp_connection(ftp_host, ftp_user, ftp_pass)
     ftp_session.cwd('/')
@@ -48,7 +47,7 @@ def save_to_ftp(ftp_host, ftp_user, ftp_pass, ftp_dir, filename):
         else:
             ftp_session.mkd(directory)
             ftp_session.cwd(directory)
-    with open(filename, 'rb') as output_file:
+    with open(path_to_file, 'rb') as output_file:
         ftp_session.storbinary(f'STOR /{ftp_dir}/{filename}', output_file)
     ftp_session.quit()
 
@@ -74,18 +73,19 @@ ftp_host = args.ftpHost
 ftp_user = args.ftpUser
 ftp_pass = args.ftpPass
 ftp_dir = args.ftpDir
-filename = args.pathToFile
+path_to_file = args.pathToFile
+filename = path_to_file.rsplit('/', 1)[-1]
 
 if __name__ == "__main__":
     time.sleep(10)
     logging.info(f'[{os.path.basename(__file__)} started]')
-    if not os.path.isfile(filename):
-        logging.error(f'{os.path.basename(__file__)}: {FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), filename)}')
+    if not os.path.isfile(path_to_file):
+        logging.error(f'{os.path.basename(__file__)}: {FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path_to_file)}')
         logging.info(f'[{os.path.basename(__file__)} stopped]')
         sys.exit(0)
     event_handler = MonitorFile()
     observer = Observer()
-    observer.schedule(event_handler, path=filename.rsplit('/', 1)[0], recursive=True)
+    observer.schedule(event_handler, path=path_to_file.rsplit('/', 1)[0], recursive=True)
     observer.start()
     logging.info('[Observer started]')
     try:
