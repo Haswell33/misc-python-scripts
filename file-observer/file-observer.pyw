@@ -23,14 +23,16 @@ class MonitorFile(FileSystemEventHandler):
 
     def on_modified(self, event):
         super(MonitorFile, self).on_modified(event)
-        if '.kdbx' in filename:  # not event.src_path.endswith(filename) because keepass makes update in 1 hour cycle for no reason, but without cache value on the end of filename, this is test condition
-            if filename in event.src_path and not event.src_path.endswith(filename):
-                save_to_ftp(ftp_host, ftp_user, ftp_pass, ftp_dir, filename)
-                logging.info(f'[LOCAL->FTP] path={filename}; ftpHost={ftp_host}; event_type={event.event_type}; cache_value={event.src_path.rsplit(".", 1)[-1]}')
-            else:
-                logging.info(f'{filename} has triggered on_modified event, but was not modified')  # for test
-        else:  # common situation
+        # if '.kdbx' in filename:  # not event.src_path.endswith(filename) because keepass makes update in 1 hour cycle for no reason, but without cache value on the end of filename, this is test condition
+        # if filename in event.src_path and not event.src_path.endswith(filename):
+        if filename in event.src_path:
+        #        save_to_ftp(ftp_host, ftp_user, ftp_pass, ftp_dir, filename)
+        #        logging.info(f'[LOCAL->FTP] path={filename}; ftpHost={ftp_host}; event_type={event.event_type}; cache_value={event.src_path.rsplit(".", 1)[-1]}')
+        #    else:
+        #        logging.info(f'{filename} has triggered on_modified event, but was not modified')  # for test
+        # else:  # common situation
             save_to_ftp(ftp_host, ftp_user, ftp_pass, ftp_dir, filename)
+            logging.info(f'[LOCAL->FTP] path={filename}; ftpHost={ftp_host}; event_type={event.event_type}; cache_value={event.src_path.rsplit(".", 1)[-1]}')
 
     def on_deleted(self, event):
         super(MonitorFile, self).on_deleted(event)
