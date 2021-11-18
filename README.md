@@ -18,5 +18,5 @@ and there are 3 lines to edit before import to task scheduler:
 - `ftp-upload.py` sends specified local directory (recursively) to FTP server
 ---
 ### hilbert-curve
-- `hilbert-curve.py` raws a hilbert curve
+- `hilbert-curve.py` draws a hilbert curve
 ---
