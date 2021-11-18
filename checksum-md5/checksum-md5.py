@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
+
 import hashlib
 import sys
-import datetime
+
 
 def checksum_md5(file_name):
     hash_md5 = hashlib.md5()
