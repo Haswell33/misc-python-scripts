@@ -20,3 +20,8 @@ and there are 3 lines to edit before import to task scheduler:
 ### hilbert-curve
 - `hilbert-curve.py` draws a hilbert curve
 ---
+### synchronize-dirs
+- `synchronize.py` syncs local directory with directory on the remote host using rsync
+---
+### backup-rsync
+- `backup-rsync.py` backups specified directory or directories to specified dest host or other local directory, if the num of backups is greated than declared, the script will delete the oldest copy to maintain the required num of backups 
