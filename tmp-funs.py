@@ -136,10 +136,10 @@ def test_sql():
     end_date = '2021-07-01'
     o2billing_db = mysql.connector.connect(
         converter_class=ConvertToString,
-        host='172.30.2.86',
-        user='karol.siedlaczek',
-        password='ieFied9Ael7ReiDo',
-        database='o2billing')
+        host='hops.hops.hops.hops',
+        user='hops.hops',
+        password='hops',
+        database='hopsdb')
     cursor = o2billing_db.cursor(buffered=True)
     for workspace in workspaces_list:
         cursor.execute("""
