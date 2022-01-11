@@ -1,0 +1,32 @@
+2022-01-07 19:28:58 | root | INFO | Creating backup "logs/backup-2022-01-07" completed successfully
+2022-01-07 19:29:47 | root | INFO | Creating backup "logs/backup-2022-01-07" completed successfully
+2022-01-11 13:57:23 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 13:57:32 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:02:00 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:11:15 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:11:54 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:12:02 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:13:42 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:14:07 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:16:07 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:16:56 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:23:50 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:24:03 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:24:09 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:24:13 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:26:11 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:26:18 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:28:19 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:28:27 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:31:03 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:35:22 | root | ERROR | Request timed out, 188.64.80.1222 did not response to ping
+2022-01-11 14:39:55 | root | ERROR | Request timed out, 188.64.80.1222 did not response to ping
+2022-01-11 14:43:20 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:43:33 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:44:57 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:45:06 | root | INFO | 188.64.80.101 is reachable
+2022-01-11 14:45:06 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
+2022-01-11 14:47:39 | root | ERROR | Request timed out, 188.64.80.1014567 did not response to ping in 120 seconds
+2022-01-11 15:12:43 | root | ERROR | Request timed out, 188.64.80.1014567 did not response to ping in 120.0 seconds
+2022-01-11 15:29:27 | root | ERROR | Request timed out, 188.64.80.1014567 did not response to ping in 120 seconds
+2022-01-11 15:31:44 | root | ERROR | Request timed out, 188.64.80.1014567 did not response to ping in 120 seconds
