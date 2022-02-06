@@ -30,3 +30,5 @@
 2022-01-11 15:12:43 | root | ERROR | Request timed out, 188.64.80.1014567 did not response to ping in 120.0 seconds
 2022-01-11 15:29:27 | root | ERROR | Request timed out, 188.64.80.1014567 did not response to ping in 120 seconds
 2022-01-11 15:31:44 | root | ERROR | Request timed out, 188.64.80.1014567 did not response to ping in 120 seconds
+2022-01-11 15:38:47 | root | INFO | 192.168.0.101 is reachable
+2022-01-11 15:38:47 | root | INFO | Creating backup "/var/raid1/sftp/storage-user/backups/system/backup-2022-01-11" completed successfully
