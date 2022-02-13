@@ -11,74 +11,91 @@ import time
 import argparse
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
+from termcolor import colored
 
-logging.basicConfig(filename=f'{os.path.abspath(os.path.dirname(__file__))}/logs/backup-tool.log', format='%(asctime)s | %(name)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.INFO)
+logging.basicConfig(filename=f'{os.path.abspath(os.path.dirname(__file__))}/logs/backup-tool.log', format='%(asctime)s | %(name)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
 
-RSYNC_DESKTOP_PASS = 'testpass'
+# RSYNC_DESKTOP_PASS = 'testpass'
 
 
-def make_backup(src_dir, dest_dir, src_host, max_num_of_backups):
+def make_backup(dirs, max_num_of_backups):
+    regex_pattern = r'^\S*@(\d{3}.\d{3}.\d{1}.\d*)'
+    dest_dir = dirs[-1]
     backup_filename = f'backup-{_get_today()}'
-    if not src_host == 'localhost':
-        remote_backup(src_dir, dest_dir, src_host, backup_filename)
+    dirs[-1] += '/' + backup_filename
+    ip_address = re.findall(regex_pattern, dest_dir)[0]
+    if ip_address:  # means that rsync will need to work via ssh with other host, because found ip address in provided dir
+        if not host_is_up(ip_address):
+            start_host(ip_address)
+    logging.debug(f'creating backup in progress "{dest_dir}/{backup_filename}"...')
+    send_rsync(dirs)
+    if not re.match(regex_pattern, dest_dir):
+        if _get_num_of_backups(dest_dir) >= max_num_of_backups:
+            logging.info(f'number of backups has been exceeded, current amount is greater than {max_num_of_backups}, the oldest directory will be deleted')
+            remove_oldest_backup(dest_dir)
     else:
-        local_backup(src_dir, dest_dir, backup_filename)
-    if _get_num_of_backups(dest_dir) > max_num_of_backups:
-        remove_oldest_backup(dest_dir)
-    logging.info(f'Creating backup "{dest_dir}/{backup_filename}" completed successfully')
+        logging.info('checking num of backups skipped, because destination directory is on remote host')
+    logging.debug(f'creating backup "{dest_dir}/{backup_filename}" completed successfully')
 
 
-def local_backup(src_dirs, dest_dir, backup_filename):
-    src_local_dir = ''
-    for src_dir in src_dirs:
-        src_local_dir = f'{src_local_dir} "{src_dir}"'
-    src_local_dir = src_local_dir[1:]
-    print(f'rsync -a {src_local_dir} "{dest_dir}/{backup_filename}"')
-
-
-def remote_backup(src_dirs, dest_dir, src_host, backup_filename):
-    src_remote_dir = ''
-    start_desktop(src_host)
-    for src_dir in src_dirs:
-        src_remote_dir = f'{src_remote_dir} "rsync://{src_host}/{src_dir}"'
-    src_remote_dir = src_remote_dir[1:]
-    print(f'RSYNC_PASSWORD={RSYNC_DESKTOP_PASS} rsync -a {src_remote_dir} "{dest_dir}/{backup_filename}"')
-    # os.system()
+def send_rsync(dirs):
+    rsync_args = ''
+    for directory in dirs:
+        rsync_args += directory + ' '
+    # print(f'rsync -a {rsync_args}')
 
 
 def remove_oldest_backup(dest_dir):
-    oldest_backup = min(os.listdir(dest_dir), key=lambda dirs: os.path.getctime(os.path.join(dest_dir, dirs)))  # looking for the file with the oldest modified date
+    regex_pattern = r'^backup-\d{4}-\d{2}-\d{2}'  # to avoid deleting unexpected directory when user provide wrong path
+    os.chdir(dest_dir)
+    files = sorted(os.listdir(os.getcwd()), key=os.path.getmtime)  # files[0] is the oldest file, files[-1] is the newest
+    for file in files:
+        if os.path.isdir(file):  # looking for first dir in array, so it will find the oldest dir
+            oldest_backup = file
+            break
     try:
-        shutil.rmtree(f'{dest_dir}/{oldest_backup}')
-        logging.debug(f'Deleting backup "{dest_dir}/{oldest_backup}" completed successfully')
+        logging.info(f'oldest backup: "{dest_dir}/{oldest_backup}"')
+        if re.match(regex_pattern, oldest_backup):
+            logging.info(f'deleting oldest backup in progress "{dest_dir}/{oldest_backup}"...')
+            # shutil.rmtree(f'{dest_dir}/{oldest_backup}')
+            logging.debug(f'deleting oldest backup "{dest_dir}/{oldest_backup}" completed successfully')
+        else:
+            logging.warning('directory did not deleted, name of directory is not usual for backup filename')
     except PermissionError as error_msg:
-        logging.error(f'PermissionError: {str(error_msg)}')
+        logging.error(f'PermissionError: {str(error_msg)}, can not delete oldest backup directory')
         print(f'{os.path.basename(__file__)}: an error has occurred, check logs for more information')
         return
 
 
-def start_desktop(host):
+def host_is_up(ip_address):
     start_timestamp = _get_datetime_object(datetime.now().strftime('%H:%M:%S'))
-    end_timestamp = start_timestamp + relativedelta(minutes=+2)  # setting up timeout for 120 seconds
-    ip_address = re.findall(r'(?<=@)[^\]]+', host)[0]
+    end_timestamp = start_timestamp + relativedelta(minutes=+1)  # setting up timeout for 120 seconds
     waiting = True
-    # os.system(f'./remote-task.py -o start -n desktop')
+
     while waiting:
-        ping_response = os.system(f'ping -n 1 {ip_address}')  # for linux -c
-        if ping_response == 0:
-            logging.info(f'{ip_address} is reachable')
-            waiting = False
-        else:
+        response = os.popen(f'ping -n 1 {ip_address}').read()  # for linux -c, for windows -n
+        if 'Destination host unreachable' in response or 'Request timed out' in response or 'Received = 0' in response:
             time.sleep(1)
             print(f'waiting for host...')
             if datetime.now().strftime("%H:%M:%S") == end_timestamp.strftime("%H:%M:%S"):
                 print(f'{os.path.basename(__file__)}: an error has occurred, check logs for more information')
                 logging.error(f'Request timed out, {ip_address} did not response to ping in {int((end_timestamp - start_timestamp).total_seconds())} seconds')
                 sys.exit(0)
+        else:
+            print(f'{ip_address} is up')
+            print(ip_address + ': ' + '\033[92m')
+            logging.info(f'{ip_address} is up')
+            waiting = False
+    return True
+
+
+def start_host(ip_address):
+    # os.system(f'./remote-task.py -o start -H desktop')
+    # host_is_up(ip_address)
+    print('starting host')
 
 
 def _get_num_of_backups(dest_dir):  # count number of existing files in destination folder
-    return 0
     count = 0
     for directory in os.listdir(dest_dir):
         if os.path.isdir(os.path.join(dest_dir, directory)):
@@ -96,16 +113,14 @@ def _get_datetime_object(date):
 
 def parse_args():
     arg_parser = argparse.ArgumentParser(description='Backup scripts using rsync-backup to make CRON backups')
-    arg_parser.add_argument('-s', '--srcDir', nargs='+', help='Source directory which will be backed up, several directories may be selected in format {-s dir1 dir2 dirN}', type=str, required=True)
-    arg_parser.add_argument('-d', '--destDir', help='Destination directory where backup will be stored in format {-d dir}', type=str, required=True)
-    arg_parser.add_argument('-H', '--srcHost', help='Specified host if selected dirs are on remote host in format {-H user@address}. Default value is localhost', type=str, default='localhost')
+    arg_parser.add_argument('-d', '--dirs', nargs='+', help='Dirs to specify source and destination directories, last provided dir is destination, for instance {-d dir1 dir2 dir3} will read dir1, dir2 and save in dir3', type=str, required=True)
     arg_parser.add_argument('-n', '--numBackup', help='Number of max backup directories, if there will be more than specified number the oldest backup will be deleted, default value is 5', type=int, default=5)
     return arg_parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    make_backup(args.srcDir, args.destDir, args.srcHost, args.numBackup)
+    make_backup(args.dirs, args.numBackup)
 
 '''
 ("ping " + ("-n 1 " if  platform.system().lower()=="windows" else "-c 1 ") + host)
