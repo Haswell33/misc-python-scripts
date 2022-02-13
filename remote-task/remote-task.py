@@ -15,7 +15,6 @@ logging.basicConfig(filename=f'{os.path.abspath(os.path.dirname(__file__))}/logs
 def start(hostname):  # Wake On Lan packet
     mac_address = get_mac(hostname)
     mac_address = mac_address.replace(mac_address[2], '')
-    print(mac_address)
     data = ''.join(['FFFFFFFFFFFF', mac_address * 20])  # pad the synchronization stream.
     send_data = b''
     for i in range(0, len(data), 2):  # split up the hex values and pack.
@@ -31,9 +30,9 @@ def stop(hostname):
     system = get_system()
     ip_address = get_ip(hostname)
     user = 'karol.siedlaczek'
-    if system == 'win32':
-        os.system(f'ssh {user}@{ip_address} "shutdown -s"')
-    elif system == 'linux' or system == 'linux2':
+    if system == 'windows':
+        os.system(f'ssh {user}@{ip_address} "shutdown /s"')
+    elif system == 'linux':
         os.system(f'ssh {user}@{ip_address} "shutdown -h"')
     logging.debug(f'{hostname} has been shutdown by logging in to {user} using ssh')
     print(f'{hostname} has been shutdown by logging in to {user} using ssh')
@@ -43,9 +42,9 @@ def sleep(hostname):
     system = get_system()
     ip_address = get_ip(hostname)
     user = 'karol.siedlaczek'
-    if system == 'win32':
-        os.system(f'ssh {user}@{ip_address} "shutdown -h"')
-    elif system == 'linux' or system == 'linux2':
+    if system == 'windows':
+        os.system(f'ssh {user}@{ip_address} "shutdown /h"')
+    elif system == 'linux':
         os.system(f'ssh {user}@{ip_address} "systemctl hibernate"')
     logging.debug(f'{hostname} has been asleep by logging in to {user} using ssh')
     print(f'{hostname} has been asleep by logging in to {user} using ssh')
@@ -55,16 +54,12 @@ def restart(hostname):
     system = get_system()
     ip_address = get_ip(hostname)
     user = get_user()
-    if system == 'win32':
-        os.system(f'ssh {user}@{ip_address} "shutdown -r"')
-    elif system == 'linux' or system == 'linux2':
+    if system == 'windows':
+        os.system(f'ssh {user}@{ip_address} "shutdown /r /t 1"')
+    elif system == 'linux':
         os.system(f'ssh {user}@{ip_address} "reboot"')
     logging.debug(f'{hostname} has been restarted by logging in to {user} using ssh')
     print(f'{hostname} has been restarted by logging in to {user} using ssh')
-
-
-def get_system():  # windows = win32; linux = linux, linux2
-    return sys.platform
 
 
 def get_list():  # shows lists of available hosts
@@ -73,7 +68,7 @@ def get_list():  # shows lists of available hosts
 
 def status(hostname):  # just ping to host
     ip_address = get_ip(hostname)
-    response = os.popen(f'ping -n 4 {ip_address}').read()  # for linux -c, for windows -n
+    response = os.popen(f'ping -c 4 {ip_address}').read()  # for linux -c, for windows -n
     if 'Destination host unreachable' in response or 'Request timed out' in response or 'Received = 0' in response:
         print(hostname + ': ' + colored('OFF', 'red'))
     else:
@@ -115,6 +110,8 @@ def get_ip(hostname):  # tmp fun
     else:
         print('I do not know you, pozniej bedzie baza')
         sys.exit(0)
+def get_system():  # windows = win32; linux = linux, linux2
+    return 'windows'
 def get_user():
     return 'karol.siedlaczek'
 def get_mac(hostname):

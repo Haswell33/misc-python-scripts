@@ -39,7 +39,7 @@ def send_rsync(dirs):
     rsync_args = ''
     for directory in dirs:
         rsync_args += directory + ' '
-    # print(f'rsync -a {rsync_args}')
+    os.system(f'rsync -a {rsync_args}')
 
 
 def remove_oldest_backup(dest_dir):
@@ -69,7 +69,7 @@ def host_is_up(ip_address, timeout):
     end_timestamp = start_timestamp + relativedelta(seconds=+timeout)  # setting up timeout
     waiting = True
     while waiting:
-        response = os.popen(f'ping -n 1 {ip_address}').read()  # for linux -c, for windows -n
+        response = os.popen(f'ping -c 1 {ip_address}').read()  # for linux -c, for windows -n
         if 'Destination host unreachable' in response or 'Request timed out' in response or 'Received = 0' in response:
             time.sleep(1)
             print(f'waiting for host...')
@@ -85,7 +85,7 @@ def host_is_up(ip_address, timeout):
 
 
 def start_host(ip_address):
-    # os.system(f'./remote-task.py -o start -H desktop')
+    os.system(f'./remote-task.py -o start -H desktop')
     print(f'WOL packet has been sent to {ip_address} to turn on host')
     host_is_up(ip_address, 120)
 

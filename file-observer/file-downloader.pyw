@@ -14,16 +14,18 @@ CSIDL_PERSONAL = 5  # My Documents
 SHGFP_TYPE_CURRENT = 0
 MY_DOCUMENTS = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
 ctypes.windll.shell32.SHGetFolderPathW(0, CSIDL_PERSONAL, 0, SHGFP_TYPE_CURRENT, MY_DOCUMENTS)
-logging.basicConfig(filename=f'{MY_DOCUMENTS.value}/logs/{os.path.basename(__file__).split(".")[0]}.log', format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%d-%m-%Y %H:%M:%S', level=logging.DEBUG)
+logging.basicConfig(filename=f'{MY_DOCUMENTS.value}/logs/file-observer.log', format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%d-%m-%Y %H:%M:%S', level=logging.DEBUG)
 
 
 def check_timestamp_of_file(path_to_file, ftp_host, ftp_user, ftp_pass, ftp_dir):  # check modified time of files, if file in ftp is newer fun will retr it to local storage
     local_timestamp = datetime.strptime(datetime.fromtimestamp(os.path.getmtime(f'{path_to_file}')).strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
+    print(local_timestamp)
     filename = path_to_file.rsplit('/', 1)[-1]
     ftp_session = _get_ftp_connection(ftp_host, ftp_user, ftp_pass)
     ftp_session.cwd(ftp_dir)
     ftp_timestamp = ftp_session.voidcmd('MDTM ' + filename)[4:].strip()
     ftp_timestamp = parser.parse(ftp_timestamp)
+    print(ftp_timestamp)
     difference_between_timestamps = divmod((ftp_timestamp - local_timestamp).total_seconds(), 60)
     if local_timestamp < ftp_timestamp and difference_between_timestamps[0] > 2.0:
         download_file(ftp_session, path_to_file, filename)
@@ -40,10 +42,9 @@ def download_file(ftp_session, path_to_file, filename):
 
 
 def _get_ftp_connection(host, user, password):
-    ftps_session = ftplib.FTP_TLS(host)
-    ftps_session.login(user, password)
-    ftps_session.prot_p()
-    return ftps_session
+    ftp_session = ftplib.FTP(host)
+    ftp_session.login(user, password)
+    return ftp_session
 
 
 def parse_args():
