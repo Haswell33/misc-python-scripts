@@ -25,8 +25,8 @@ def make_backup(dirs, max_num_of_backups):
     dirs[-1] += '/' + backup_filename
     ip_address = re.findall(regex_pattern, dest_dir)[0]
     if ip_address:  # means that rsync will need to work via ssh with other host, because found ip address in provided dir
-        if not host_is_up(ip_address):
-            start_host(ip_address)
+        if not host_is_up(ip_address, 10):
+            start_host(ip_address, 120)
     logging.debug(f'creating backup in progress "{dest_dir}/{backup_filename}"...')
     send_rsync(dirs)
     if not re.match(regex_pattern, dest_dir):
@@ -67,9 +67,10 @@ def remove_oldest_backup(dest_dir):
         return
 
 
-def host_is_up(ip_address):
+def host_is_up(ip_address, timeout):
     start_timestamp = _get_datetime_object(datetime.now().strftime('%H:%M:%S'))
-    end_timestamp = start_timestamp + relativedelta(minutes=+1)  # setting up timeout for 120 seconds
+    # end_timestamp = start_timestamp + relativedelta(minutes=+1)  # setting up timeout for 120 seconds
+    end_timestamp = start_timestamp + relativedelta(seconds=+timeout)  # setting up timeout for 120 seconds
     waiting = True
 
     while waiting:
@@ -80,7 +81,8 @@ def host_is_up(ip_address):
             if datetime.now().strftime("%H:%M:%S") == end_timestamp.strftime("%H:%M:%S"):
                 print(f'{os.path.basename(__file__)}: an error has occurred, check logs for more information')
                 logging.error(f'Request timed out, {ip_address} did not response to ping in {int((end_timestamp - start_timestamp).total_seconds())} seconds')
-                sys.exit(0)
+                # sys.exit(0)
+                return False
         else:
             print(f'{ip_address} is up')
             print(ip_address + ': ' + '\033[92m')
@@ -92,7 +94,7 @@ def host_is_up(ip_address):
 def start_host(ip_address):
     # os.system(f'./remote-task.py -o start -H desktop')
     # host_is_up(ip_address)
-    print('starting host')
+    print(f'WOL packet has been sent to {ip_address} to turn on host')
 
 
 def _get_num_of_backups(dest_dir):  # count number of existing files in destination folder
