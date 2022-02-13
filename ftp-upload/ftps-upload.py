@@ -9,15 +9,15 @@ import os
 def upload_local_files_to_ftps(src_path, dest_path, dest_ftps_host, dest_ftps_user, dest_ftps_pass):
     if not os.path.exists(src_path):
         return
-    ftps_session = get_FTPS_connection(dest_ftps_host, dest_ftps_user, dest_ftps_pass)
+    ftps_session = get_ftps_connection(dest_ftps_host, dest_ftps_user, dest_ftps_pass)
     check_if_dest_path_exists(ftps_session, dest_path)
     send_recursive_files_on_ftps(ftps_session, src_path)
     ftps_session.quit()
 
 
-def get_FTPS_connection(ftps_host, ftps_user, ftps_pass):
-    ftps_session = ftplib.FTP_TLS(ftps_host)
-    ftps_session.login(ftps_user, ftps_pass)
+def get_ftps_connection(host, user, password):
+    ftps_session = ftplib.FTP_TLS(host)
+    ftps_session.login(user, password)
     ftps_session.prot_p()
     ftps_session.cwd('/')
     return ftps_session

@@ -445,3 +445,15 @@
 2022-02-13 06:00:32 | root | DEBUG | creating backup in progress "karol.siedlaczek@192.168.0.101:/cygdrive/d/apps/backup-2022-02-13"...
 2022-02-13 06:00:32 | root | INFO | checking num of backups skipped, because destination directory is on remote host
 2022-02-13 06:00:32 | root | DEBUG | creating backup "karol.siedlaczek@192.168.0.101:/cygdrive/d/apps/backup-2022-02-13" completed successfully
+2022-02-13 17:59:14 | root | INFO | 192.168.0.101 is up
+2022-02-13 17:59:14 | root | DEBUG | creating backup in progress "karol.siedlaczek@192.168.0.131:/cygdrive/d/apps/backup-2022-02-13"...
+2022-02-13 17:59:14 | root | INFO | checking num of backups skipped, because destination directory is on remote host
+2022-02-13 17:59:14 | root | DEBUG | creating backup "karol.siedlaczek@192.168.0.131:/cygdrive/d/apps/backup-2022-02-13" completed successfully
+2022-02-13 18:02:45 | root | ERROR | Request timed out, 192.168.0.122 did not response to ping in 15 seconds
+2022-02-13 18:02:45 | root | DEBUG | creating backup in progress "karol.siedlaczek@192.168.0.131:/cygdrive/d/apps/backup-2022-02-13"...
+2022-02-13 18:02:45 | root | INFO | checking num of backups skipped, because destination directory is on remote host
+2022-02-13 18:02:45 | root | DEBUG | creating backup "karol.siedlaczek@192.168.0.131:/cygdrive/d/apps/backup-2022-02-13" completed successfully
+2022-02-13 18:03:15 | root | ERROR | Request timed out, 192.168.0.122 did not response to ping in 10 seconds
+2022-02-13 18:03:15 | root | DEBUG | creating backup in progress "karol.siedlaczek@192.168.0.131:/cygdrive/d/apps/backup-2022-02-13"...
+2022-02-13 18:03:15 | root | INFO | checking num of backups skipped, because destination directory is on remote host
+2022-02-13 18:03:15 | root | DEBUG | creating backup "karol.siedlaczek@192.168.0.131:/cygdrive/d/apps/backup-2022-02-13" completed successfully

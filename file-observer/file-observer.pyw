@@ -16,7 +16,7 @@ CSIDL_PERSONAL = 5  # My Documents
 SHGFP_TYPE_CURRENT = 0
 MY_DOCUMENTS = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
 ctypes.windll.shell32.SHGetFolderPathW(0, CSIDL_PERSONAL, 0, SHGFP_TYPE_CURRENT, MY_DOCUMENTS)
-logging.basicConfig(filename=MY_DOCUMENTS.value + '/logs/file-observer.log', format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%d-%m-%Y %H:%M:%S', level=logging.INFO)
+logging.basicConfig(filename=f'{MY_DOCUMENTS.value}/logs/{os.path.basename(__file__).split(".")[0]}.log', format='%(asctime)s | %(levelname)s | %(message)s', datefmt='%d-%m-%Y %H:%M:%S', level=logging.DEBUG)
 
 
 class MonitorFile(FileSystemEventHandler):
@@ -54,10 +54,11 @@ def save_to_ftp(ftp_host, ftp_user, ftp_pass, ftp_dir, filename, path_to_file):
     ftp_session.quit()
 
 
-def _get_ftp_connection(host, username, password):
-    ftp_session = ftplib.FTP(host)
-    ftp_session.login(username, password)
-    return ftp_session
+def _get_ftp_connection(host, user, password):
+    ftps_session = ftplib.FTP_TLS(host)
+    ftps_session.login(user, password)
+    ftps_session.prot_p()
+    return ftps_session
 
 
 def parse_args():
