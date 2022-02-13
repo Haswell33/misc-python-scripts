@@ -26,7 +26,7 @@ def make_backup(dirs, max_num_of_backups):
     ip_address = re.findall(regex_pattern, dest_dir)[0]
     if ip_address:  # means that rsync will need to work via ssh with other host, because found ip address in provided dir
         if not host_is_up(ip_address, 10):
-            start_host(ip_address, 120)
+            start_host(ip_address)
     logging.debug(f'creating backup in progress "{dest_dir}/{backup_filename}"...')
     send_rsync(dirs)
     if not re.match(regex_pattern, dest_dir):
@@ -93,7 +93,7 @@ def host_is_up(ip_address, timeout):
 
 def start_host(ip_address):
     # os.system(f'./remote-task.py -o start -H desktop')
-    # host_is_up(ip_address)
+    # host_is_up(ip_address, 120)
     print(f'WOL packet has been sent to {ip_address} to turn on host')
 
 
