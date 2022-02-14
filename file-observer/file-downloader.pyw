@@ -19,13 +19,11 @@ logging.basicConfig(filename=f'{MY_DOCUMENTS.value}/logs/file-observer.log', for
 
 def check_timestamp_of_file(path_to_file, ftp_host, ftp_user, ftp_pass, ftp_dir):  # check modified time of files, if file in ftp is newer fun will retr it to local storage
     local_timestamp = datetime.strptime(datetime.fromtimestamp(os.path.getmtime(f'{path_to_file}')).strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
-    print(local_timestamp)
     filename = path_to_file.rsplit('/', 1)[-1]
     ftp_session = _get_ftp_connection(ftp_host, ftp_user, ftp_pass)
     ftp_session.cwd(ftp_dir)
     ftp_timestamp = ftp_session.voidcmd('MDTM ' + filename)[4:].strip()
     ftp_timestamp = parser.parse(ftp_timestamp)
-    print(ftp_timestamp)
     difference_between_timestamps = divmod((ftp_timestamp - local_timestamp).total_seconds(), 60)
     if local_timestamp < ftp_timestamp and difference_between_timestamps[0] > 2.0:
         download_file(ftp_session, path_to_file, filename)
