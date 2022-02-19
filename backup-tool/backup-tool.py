@@ -12,15 +12,22 @@ from dateutil.relativedelta import relativedelta
 
 logging.basicConfig(filename=f'{os.path.abspath(os.path.dirname(__file__))}/logs/{os.path.basename(__file__).split(".")[0]}.log', format='%(asctime)s | %(name)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
 
+PASSWORD_FILE = '/root/.ssh/.password'
+
 
 def make_backup(directories, user, max_num_of_backups):
-    regex_pattern = r'^\S*@(\d{3}.\d{3}.\d{1}.\d*)'
+    regex_pattern = r'^(\d{3}.\d{3}.\d{1}.\d{2,3})'
     ssh_conn = False
     dest_dir = directories[-1]
     backup_filename = f'backup-{_get_today()}'
     directories[-1] += '/' + backup_filename
+    os.system(f'mkdir -p {directories[-1]}')
     for directory in directories:
         if re.findall(regex_pattern, directory):  # means that rsync will need to work via ssh with other host, because found ip address in provided dir
+            if not user:
+                print(f'{os.path.basename(__file__)}: -u/--user arg expected if remote connection, backup creation aborted')
+                logging.error(f'{os.path.basename(__file__)}: -u/--user arg expected if remote connection, backup creation aborted')
+                sys.exit(0)
             ip_address = re.findall(regex_pattern, directory)[0]
             if not host_is_up(ip_address, 10):
                 start_host(ip_address)
@@ -42,13 +49,9 @@ def send_rsync(dirs, user, ssh_conn):
     for directory in dirs:
         rsync_args += directory + ' '
     if ssh_conn:  # remote connection
-        print(f'rsync -altv --rsh="sshpass -P passphrase -f /root/.ssh/.password -l {user}" {rsync_args}> {dirs[-1]}/rsync.log')
+        os.system(f'rsync -altv --rsh="sshpass -P passphrase -f {PASSWORD_FILE} ssh -l {user}" {rsync_args}--info=progress2 > {dirs[-1]}/rsync.log')
     else:  # local connection
-        print(f'rsync -altv {rsync_args}> {dirs[-1]}/rsync.log')
-
-"sshpass -P passphrase -f ~/.ssh/.password ssh -o StrictHostKeyChecking=no desktop"
-'rsync -altv --rsh="sshpass -P passphrase -f /root/.ssh/.password ssh -o StrictHostKeyChecking=no -l karol.siedlaczek" karol.siedlaczek@desktop:/cygdrive/f/TEST /root/test'
-'rsync -altv --rsh="sshpass -P passphrase -f /root/.ssh/.password ssh -l karol.siedlaczek" 192.168.0.101:/cygdrive/f/TEST /root/test'
+        os.system(f'rsync -altv {rsync_args}--info=progress2 > {dirs[-1]}/rsync.log')
 
 
 def remove_oldest_backup(dest_dir):

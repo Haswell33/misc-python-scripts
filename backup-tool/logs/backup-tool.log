@@ -528,3 +528,32 @@
 2022-02-19 03:34:40 | root | INFO | oldest backup: "d:/apps/KeePassXC"
 2022-02-19 03:34:40 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
 2022-02-19 03:34:40 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 19:35:36 | root | ERROR | -u/--user arg expected if remote connection
+2022-02-19 19:35:54 | root | ERROR | backup-tool.py: -u/--user arg expected if remote connection
+2022-02-19 19:36:35 | root | ERROR | backup-tool.py: -u/--user arg expected if remote connection, backup creation aborted
+2022-02-19 19:38:54 | root | INFO | 192.168.0.101 is up
+2022-02-19 19:38:54 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 19:38:54 | root | INFO | number of backups has been exceeded, current amount is greater than 5, the oldest directory will be deleted
+2022-02-19 19:38:54 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 19:38:54 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 19:38:54 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 19:39:19 | root | INFO | 192.168.0.101 is up
+2022-02-19 19:39:19 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 19:39:19 | root | INFO | number of backups has been exceeded, current amount is greater than 5, the oldest directory will be deleted
+2022-02-19 19:39:19 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 19:39:19 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 19:39:19 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 19:47:11 | root | INFO | 192.168.0.101 is up
+2022-02-19 19:47:11 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 19:47:11 | root | INFO | number of backups has been exceeded, current amount is greater than 5, the oldest directory will be deleted
+2022-02-19 19:47:11 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 19:47:11 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 19:47:11 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 20:35:07 | root | INFO | 192.168.0.101 is up
+2022-02-19 20:35:07 | root | DEBUG | creating backup in progress "d:/apps/apps2/apps3/backup-2022-02-19"...
+2022-02-19 20:35:14 | root | INFO | 192.168.0.101 is up
+2022-02-19 20:35:14 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 20:35:14 | root | INFO | number of backups has been exceeded, current amount is greater than 5, the oldest directory will be deleted
+2022-02-19 20:35:14 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 20:35:14 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 20:35:14 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
