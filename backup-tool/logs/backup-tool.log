@@ -457,3 +457,43 @@
 2022-02-13 18:03:15 | root | DEBUG | creating backup in progress "karol.siedlaczek@192.168.0.131:/cygdrive/d/apps/backup-2022-02-13"...
 2022-02-13 18:03:15 | root | INFO | checking num of backups skipped, because destination directory is on remote host
 2022-02-13 18:03:15 | root | DEBUG | creating backup "karol.siedlaczek@192.168.0.131:/cygdrive/d/apps/backup-2022-02-13" completed successfully
+2022-02-19 01:38:21 | root | INFO | 192.168.0.122 is up
+2022-02-19 01:38:21 | root | DEBUG | creating backup in progress "d:/aps/backup-2022-02-19"...
+2022-02-19 01:38:26 | root | INFO | 192.168.0.122 is up
+2022-02-19 01:38:26 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 01:38:26 | root | INFO | number of backups has been exceeded, current amount is greater than 2, the oldest directory will be deleted
+2022-02-19 01:38:26 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 01:38:26 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 01:38:26 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 01:49:58 | root | INFO | 192.168.0.122 is up
+2022-02-19 01:49:58 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 01:49:58 | root | INFO | number of backups has been exceeded, current amount is greater than 2, the oldest directory will be deleted
+2022-02-19 01:49:58 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 01:49:58 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 01:49:58 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 01:50:09 | root | INFO | 192.168.0.122 is up
+2022-02-19 01:50:09 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 01:50:09 | root | INFO | number of backups has been exceeded, current amount is greater than 2, the oldest directory will be deleted
+2022-02-19 01:50:09 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 01:50:09 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 01:50:09 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 01:53:15 | root | INFO | 192.168.0.122 is up
+2022-02-19 01:53:15 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 01:53:15 | root | INFO | number of backups has been exceeded, current amount is greater than 2, the oldest directory will be deleted
+2022-02-19 01:53:15 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 01:53:15 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 01:53:15 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 01:53:29 | root | INFO | 192.168.0.122 is up
+2022-02-19 01:53:29 | root | DEBUG | creating backup in progress "/storage/backups/system/backup-2022-02-19"...
+2022-02-19 01:53:37 | root | INFO | 192.168.0.122 is up
+2022-02-19 01:53:37 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 01:53:37 | root | INFO | number of backups has been exceeded, current amount is greater than 2, the oldest directory will be deleted
+2022-02-19 01:53:37 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 01:53:37 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 01:53:37 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 01:53:51 | root | INFO | 192.168.0.122 is up
+2022-02-19 01:53:51 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 01:53:51 | root | INFO | number of backups has been exceeded, current amount is greater than 2, the oldest directory will be deleted
+2022-02-19 01:53:51 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 01:53:51 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 01:53:51 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully

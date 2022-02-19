@@ -2,7 +2,16 @@
 
 import argparse
 import os
+import pysftp
 
+srv = pysftp.Connection(host="www.destination.com", username="root",
+password="password",log="./temp/pysftp.log")
+
+with srv.cd('public'): #chdir to public
+    srv.put('C:\Users\XXX\Dropbox\test.txt') #upload file to nodejs/
+
+# Closes the connection
+srv.close()
 
 
 def parse_args():

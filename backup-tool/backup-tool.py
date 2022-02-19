@@ -39,7 +39,7 @@ def send_rsync(dirs):
     rsync_args = ''
     for directory in dirs:
         rsync_args += directory + ' '
-    os.system(f'rsync -a {rsync_args}')
+    print(f'rsync -alt --rsh="sshpass -p \'cat ~/.ssh/.password ssh\' -l haswell" {rsync_args}>{dirs[-1]}/rsync.log')
 
 
 def remove_oldest_backup(dest_dir):
@@ -121,13 +121,4 @@ if __name__ == "__main__":
         print(f'{os.path.basename(__file__)}: expected more values in -d/--dirs argument, minimum value is at least 2 directories ')
         sys.exit(0)
     make_backup(args.dirs, args.numBackup)
-
-'''
-("ping " + ("-n 1 " if  platform.system().lower()=="windows" else "-c 1 ") + host)
-/media/logs/backup-tool.log
-
-crontab
-0 4 * * 1 ./backup-tool.py -s /home /etc /root /boot /opt -d /var/raid1/sftp/storage-user/backups/system
-'''
-
 
