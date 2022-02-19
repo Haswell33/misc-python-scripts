@@ -5,23 +5,23 @@ import argparse
 import os
 
 
-def upload_local_files_to_ftp(src_path, dest_path, dest_ftp_host, dest_ftp_user, dest_ftp_pass):
+def uploadFilesFtp(src_path, dest_path, ftp_host, ftp_user, ftp_pass):
     if not os.path.exists(src_path):
         return
-    ftp_session = get_ftp_connection(dest_ftp_host, dest_ftp_user, dest_ftp_pass)
-    check_if_dest_path_exists(ftp_session, dest_path)
-    send_recursive_files_on_ftp(ftp_session, src_path)
+    ftp_session = getFtpConnection(ftp_host, ftp_user, ftp_pass)
+    checkIfDestPathExists(ftp_session, dest_path)
+    saveFilesFtp(ftp_session, src_path)
     ftp_session.quit()
 
 
-def get_ftp_connection(host, user, password):
+def getFtpConnection(host, user, password):
     ftp_session = ftplib.FTP(host)
     ftp_session.login(user, password)
     ftp_session.cwd('/')
     return ftp_session
 
 
-def check_if_dest_path_exists(ftp_session, path):
+def checkIfDestPathExists(ftp_session, path):
     directories = path.split('/')
     ftp_session.cwd('/')
     for directory in directories:  # checks if ftp_dest_dir exists, if not mkdir
@@ -32,7 +32,7 @@ def check_if_dest_path_exists(ftp_session, path):
             ftp_session.cwd(directory)
 
 
-def send_recursive_files_on_ftp(ftp_session, src_path):
+def saveFilesFtp(ftp_session, src_path):
     def stor_on_ftp(ftp_session, src_path):
         for src_file in os.listdir(src_path):
             src_local_path = os.path.join(src_path, src_file)
@@ -56,7 +56,7 @@ def send_recursive_files_on_ftp(ftp_session, src_path):
     stor_on_ftp(ftp_session, src_path)
 
 
-def parse_args():
+def parseArgs():
     arg_parser = argparse.ArgumentParser(description='')
     arg_parser.add_argument('--srcPath', help='', type=str, required=True)
     arg_parser.add_argument('--ftpHost', help='', type=str, required=True)
@@ -67,5 +67,5 @@ def parse_args():
 
 
 if __name__ == '__main__':
-    args = parse_args()
-    upload_local_files_to_ftp(args.srcPath, args.ftpDir, args.ftpHost, args.ftpUser, args.ftpPass)
+    args = parseArgs()
+    uploadFilesFtp(args.srcPath, args.ftpDir, args.ftpHost, args.ftpUser, args.ftpPass)

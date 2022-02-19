@@ -6,16 +6,16 @@ import argparse
 import os
 
 
-def upload_local_files_to_ftps(src_path, dest_path, dest_ftps_host, dest_ftps_user, dest_ftps_pass):
+def uploadFilesFtps(src_path, dest_path, ftps_host, ftps_user, ftps_pass):
     if not os.path.exists(src_path):
         return
-    ftps_session = get_ftps_connection(dest_ftps_host, dest_ftps_user, dest_ftps_pass)
-    check_if_dest_path_exists(ftps_session, dest_path)
-    send_recursive_files_on_ftps(ftps_session, src_path)
+    ftps_session = getFtpsConnection(ftps_host, ftps_user, ftps_pass)
+    checkIfDestPathExists(ftps_session, dest_path)
+    saveFilesFtps(ftps_session, src_path)
     ftps_session.quit()
 
 
-def get_ftps_connection(host, user, password):
+def getFtpsConnection(host, user, password):
     ftps_session = ftplib.FTP_TLS(host)
     ftps_session.login(user, password)
     ftps_session.prot_p()
@@ -23,7 +23,7 @@ def get_ftps_connection(host, user, password):
     return ftps_session
 
 
-def check_if_dest_path_exists(ftps_session, path):
+def checkIfDestPathExists(ftps_session, path):
     directories = path.split('/')
     ftps_session.cwd('/')
     for directory in directories:  # checks if ftp_dest_dir exists, if not mkdir
@@ -34,7 +34,7 @@ def check_if_dest_path_exists(ftps_session, path):
             ftps_session.cwd(directory)
 
 
-def send_recursive_files_on_ftps(ftps_session, src_path):
+def saveFilesFtps(ftps_session, src_path):
     def stor_on_ftps(ftps_session, src_path):
         for src_file in os.listdir(src_path):
             src_local_path = os.path.join(src_path, src_file)
@@ -58,7 +58,7 @@ def send_recursive_files_on_ftps(ftps_session, src_path):
     stor_on_ftps(ftps_session, src_path)
 
 
-def parse_args():
+def parseArgs():
     arg_parser = argparse.ArgumentParser(description='')
     arg_parser.add_argument('--srcPath', help='', type=str, required=True)
     arg_parser.add_argument('--ftpsHost', help='', type=str, required=True)
@@ -69,5 +69,5 @@ def parse_args():
 
 
 if __name__ == '__main__':
-    args = parse_args()
-    upload_local_files_to_ftps(args.srcPath, args.ftpsDir, args.ftpsHost, args.ftpsUser, args.ftpsPass)
+    args = parseArgs()
+    uploadFilesFtps(args.srcPath, args.ftpsDir, args.ftpsHost, args.ftpsUser, args.ftpsPass)
