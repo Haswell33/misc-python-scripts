@@ -13,8 +13,9 @@ from dateutil.relativedelta import relativedelta
 logging.basicConfig(filename=f'{os.path.abspath(os.path.dirname(__file__))}/logs/{os.path.basename(__file__).split(".")[0]}.log', format='%(asctime)s | %(name)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
 
 
-def make_backup(directories, max_num_of_backups):
+def make_backup(directories, user, max_num_of_backups):
     regex_pattern = r'^\S*@(\d{3}.\d{3}.\d{1}.\d*)'
+    ssh_conn = False
     dest_dir = directories[-1]
     backup_filename = f'backup-{_get_today()}'
     directories[-1] += '/' + backup_filename
@@ -23,9 +24,10 @@ def make_backup(directories, max_num_of_backups):
             ip_address = re.findall(regex_pattern, directory)[0]
             if not host_is_up(ip_address, 10):
                 start_host(ip_address)
+            ssh_conn = True
             break
     logging.debug(f'creating backup in progress "{dest_dir}/{backup_filename}"...')
-    send_rsync(directories)
+    send_rsync(directories, user, ssh_conn)
     if not re.match(regex_pattern, dest_dir):
         if _get_num_of_backups(dest_dir) >= max_num_of_backups:
             logging.info(f'number of backups has been exceeded, current amount is greater than {max_num_of_backups}, the oldest directory will be deleted')
@@ -35,11 +37,18 @@ def make_backup(directories, max_num_of_backups):
     logging.debug(f'creating backup "{dest_dir}/{backup_filename}" completed successfully')
 
 
-def send_rsync(dirs):
+def send_rsync(dirs, user, ssh_conn):
     rsync_args = ''
     for directory in dirs:
         rsync_args += directory + ' '
-    print(f'rsync -alt --rsh="sshpass -p \'cat ~/.ssh/.password ssh\' -l haswell" {rsync_args}>{dirs[-1]}/rsync.log')
+    if ssh_conn:  # remote connection
+        print(f'rsync -altv --rsh="sshpass -P passphrase -f /root/.ssh/.password -l {user}" {rsync_args}> {dirs[-1]}/rsync.log')
+    else:  # local connection
+        print(f'rsync -altv {rsync_args}> {dirs[-1]}/rsync.log')
+
+"sshpass -P passphrase -f ~/.ssh/.password ssh -o StrictHostKeyChecking=no desktop"
+'rsync -altv --rsh="sshpass -P passphrase -f /root/.ssh/.password ssh -o StrictHostKeyChecking=no -l karol.siedlaczek" karol.siedlaczek@desktop:/cygdrive/f/TEST /root/test'
+'rsync -altv --rsh="sshpass -P passphrase -f /root/.ssh/.password ssh -l karol.siedlaczek" 192.168.0.101:/cygdrive/f/TEST /root/test'
 
 
 def remove_oldest_backup(dest_dir):
@@ -85,7 +94,7 @@ def host_is_up(ip_address, timeout):
 
 
 def start_host(ip_address):
-    os.system(f'./remote-task.py -o start -H desktop')
+    os.system(f'/usr/local/bin/remote-task.py -o start -H desktop')
     print(f'WOL packet has been sent to {ip_address} to turn on host')
     host_is_up(ip_address, 120)
 
@@ -108,6 +117,7 @@ def _get_datetime_object(date):
 
 def parse_args():
     arg_parser = argparse.ArgumentParser(description='Script which using rsync-backup to make backups. It is rsync with --archive mode, but with some additionally functions')
+    arg_parser.add_argument('-u', '--user', help='In case when -d/--dir argument will have remote directories', type=str)
     arg_parser.add_argument('-d', '--dirs', nargs='+', help='Argument to specify source directories and one target directory, last one entered will be target directory. '
                                                             'For example if you enter: {-d dir1 dir2 dir3} script (actually rsync) will read data from dir1, dir2 and save it to dir3.'
                                                             'Rsync is enabled to --archive mode, so all data recursively will be copied. It is necessary to provide at least 2 directories', type=str, required=True)
@@ -120,5 +130,5 @@ if __name__ == "__main__":
     if len(args.dirs) < 2:
         print(f'{os.path.basename(__file__)}: expected more values in -d/--dirs argument, minimum value is at least 2 directories ')
         sys.exit(0)
-    make_backup(args.dirs, args.numBackup)
+    make_backup(args.dirs, args.user, args.numBackup)
 

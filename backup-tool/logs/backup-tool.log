@@ -497,3 +497,34 @@
 2022-02-19 01:53:51 | root | INFO | oldest backup: "d:/apps/KeePassXC"
 2022-02-19 01:53:51 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
 2022-02-19 01:53:51 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 03:21:11 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 03:21:11 | root | INFO | number of backups has been exceeded, current amount is greater than 2, the oldest directory will be deleted
+2022-02-19 03:21:11 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 03:21:11 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 03:21:11 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 03:24:11 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 03:24:11 | root | INFO | number of backups has been exceeded, current amount is greater than 2, the oldest directory will be deleted
+2022-02-19 03:24:11 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 03:24:11 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 03:24:11 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 03:26:47 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 03:26:47 | root | INFO | number of backups has been exceeded, current amount is greater than 2, the oldest directory will be deleted
+2022-02-19 03:26:47 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 03:26:47 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 03:26:47 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 03:27:17 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 03:27:17 | root | INFO | number of backups has been exceeded, current amount is greater than 2, the oldest directory will be deleted
+2022-02-19 03:27:17 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 03:27:17 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 03:27:17 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 03:29:31 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 03:29:31 | root | INFO | number of backups has been exceeded, current amount is greater than 2, the oldest directory will be deleted
+2022-02-19 03:29:31 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 03:29:31 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 03:29:31 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
+2022-02-19 03:32:55 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 03:34:40 | root | DEBUG | creating backup in progress "d:/apps/backup-2022-02-19"...
+2022-02-19 03:34:40 | root | INFO | number of backups has been exceeded, current amount is greater than 2, the oldest directory will be deleted
+2022-02-19 03:34:40 | root | INFO | oldest backup: "d:/apps/KeePassXC"
+2022-02-19 03:34:40 | root | WARNING | directory did not deleted, name of directory is not usual for backup filename
+2022-02-19 03:34:40 | root | DEBUG | creating backup "d:/apps/backup-2022-02-19" completed successfully
