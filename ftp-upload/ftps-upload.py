@@ -8,7 +8,7 @@ import os
 
 def uploadFilesFtps(src_path, dest_path, ftps_host, ftps_user, ftps_pass):
     if not os.path.exists(src_path):
-        return
+        raise FileNotFoundError(src_path)
     ftps_session = getFtpsConnection(ftps_host, ftps_user, ftps_pass)
     checkIfDestPathExists(ftps_session, dest_path)
     saveFilesFtps(ftps_session, src_path)
@@ -29,9 +29,12 @@ def checkIfDestPathExists(ftps_session, path):
     for directory in directories:  # checks if ftp_dest_dir exists, if not mkdir
         if directory in ftps_session.nlst():
             ftps_session.cwd(directory)
+            print(f'CWD {directory}')
         else:
             ftps_session.mkd(directory)
+            print(f'MKD {directory}')
             ftps_session.cwd(directory)
+            print(f'CWD {directory}')
 
 
 def saveFilesFtps(ftps_session, src_path):
