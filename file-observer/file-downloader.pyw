@@ -72,6 +72,7 @@ def parseArgs():
 
 
 if __name__ == "__main__":
+    logging.getLogger("paramiko").setLevel(logging.WARNING)
     logging.info(f'[{os.path.basename(__file__)} started]')
     args = parseArgs()
     if not os.path.isfile(args.srcPath):

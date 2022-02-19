@@ -43,7 +43,7 @@ class MonitorFile(FileSystemEventHandler):
         if self.file in event.src_path and '.kdbx' in self.file:  # not event.src_path.endswith(filename) because keepass makes update in 1 hour cycle for no reason, but without cache value on the end of filename, this is test condition
             if not event.src_path.endswith(self.file):
                 uploadFile(self.src_path, self.dest_path, self.sftp_host, self.sftp_user, self.sftp_pass, self.sftp_port)
-                logging.debug(f'[LOCAL->SFTP] path="{self.src_path}"; serverHost={self.src_path}; eventType={event.event_type}; cacheValue={event.src_path.rsplit(".", 1)[-1]}')
+                logging.debug(f'[LOCAL->SFTP] path="{self.src_path}"; serverHost={self.sftp_host}; eventType={event.event_type}; cacheValue={event.src_path.rsplit(".", 1)[-1]}')
             else:
                 logging.debug(f'{self.src_path} has triggered on_modified event, but was not modified')  # for test
         elif self.file in event.src_path:  # common situation
