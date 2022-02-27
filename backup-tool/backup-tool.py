@@ -10,9 +10,12 @@ import argparse
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-logging.basicConfig(filename=f'{os.path.abspath(os.path.dirname(__file__))}/logs/{os.path.basename(__file__).split(".")[0]}.log', format='%(asctime)s | %(name)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
-
+LOG_FILE = f'/var/log/{os.path.basename(__file__).split(".")[0]}.log'
+# LOG_FILE = f'{os.path.abspath(os.path.dirname(__file__))}/logs/{os.path.basename(__file__).split(".")[0]}.log'
 PASSWORD_FILE = '/root/.ssh/.password'
+STORAGE_USER = 'storage'
+
+logging.basicConfig(filename=LOG_FILE, format='%(asctime)s | %(name)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
 
 
 def make_backup(directories, user, max_num_of_backups):
@@ -21,27 +24,28 @@ def make_backup(directories, user, max_num_of_backups):
     dest_dir = directories[-1]
     backup_filename = f'backup-{_get_today()}'
     directories[-1] += '/' + backup_filename
+    logging.debug(f'backup in progress "{dest_dir}/{backup_filename}"...')
     os.system(f'mkdir -p {directories[-1]}')
     for directory in directories:
         if re.findall(regex_pattern, directory):  # means that rsync will need to work via ssh with other host, because found ip address in provided dir
             if not user:
                 print(f'{os.path.basename(__file__)}: -u/--user arg expected if remote connection, backup creation aborted')
-                logging.error(f'{os.path.basename(__file__)}: -u/--user arg expected if remote connection, backup creation aborted')
+                logging.error(f'-u/--user arg expected if remote connection, backup creation aborted')
                 sys.exit(0)
             ip_address = re.findall(regex_pattern, directory)[0]
             if not host_is_up(ip_address, 10):
                 start_host(ip_address)
             ssh_conn = True
             break
-    logging.debug(f'creating backup in progress "{dest_dir}/{backup_filename}"...')
     send_rsync(directories, user, ssh_conn)
     if not re.match(regex_pattern, dest_dir):
         if _get_num_of_backups(dest_dir) >= max_num_of_backups:
-            logging.info(f'number of backups has been exceeded, current amount is greater than {max_num_of_backups}, the oldest directory will be deleted')
+            logging.info(f'num of backups exceeded, current amount is greater than {max_num_of_backups}, oldest directory will be deleted')
             remove_oldest_backup(dest_dir)
     else:
-        logging.info('checking num of backups skipped, because destination directory is on remote host')
-    logging.debug(f'creating backup "{dest_dir}/{backup_filename}" completed successfully')
+        logging.info('checking num of backups skipped, destination directory is remote host')
+    logging.debug(f'backup "{dest_dir}/{backup_filename}" completed successfully')
+    os.system(f'chown -R {STORAGE_USER} {dest_dir}/{backup_filename}')
 
 
 def send_rsync(dirs, user, ssh_conn):
@@ -49,7 +53,7 @@ def send_rsync(dirs, user, ssh_conn):
     for directory in dirs:
         rsync_args += directory + ' '
     if ssh_conn:  # remote connection
-        os.system(f'rsync -altv --rsh="sshpass -P passphrase -f {PASSWORD_FILE} ssh -l {user}" {rsync_args}--info=progress2 > {dirs[-1]}/rsync.log')
+        os.system(f'rsync -altv --rsh="sshpass -P assphrase -f {PASSWORD_FILE} ssh -l {user}" {rsync_args}--info=progress2 > {dirs[-1]}/rsync.log')
     else:  # local connection
         os.system(f'rsync -altv {rsync_args}--info=progress2 > {dirs[-1]}/rsync.log')
 
@@ -72,7 +76,7 @@ def remove_oldest_backup(dest_dir):
             logging.warning('directory did not deleted, name of directory is not usual for backup filename')
     except PermissionError as error_msg:
         logging.error(f'PermissionError: {str(error_msg)}, can not delete oldest backup directory')
-        print(f'{os.path.basename(__file__)}: an error has occurred, check logs for more information')
+        print(f'{os.path.basename(__file__)}: an error has occurred, check {LOG_FILE} for more information')
         return
 
 
@@ -86,7 +90,7 @@ def host_is_up(ip_address, timeout):
             time.sleep(1)
             print(f'waiting for host...')
             if datetime.now().strftime("%H:%M:%S") >= end_timestamp.strftime("%H:%M:%S"):
-                print(f'{os.path.basename(__file__)}: an error has occurred, check logs for more information')
+                print(f'{os.path.basename(__file__)}: an error has occurred, check {LOG_FILE} for more information')
                 logging.error(f'Request timed out, {ip_address} did not response to ping in {int((end_timestamp - start_timestamp).total_seconds())} seconds')
                 return False
         else:
@@ -97,7 +101,7 @@ def host_is_up(ip_address, timeout):
 
 
 def start_host(ip_address):
-    os.system(f'/usr/local/bin/remote-task.py -o start -H desktop')
+    os.system(f'/usr/local/bin/remote-task.py -c start -H desktop')
     print(f'WOL packet has been sent to {ip_address} to turn on host')
     host_is_up(ip_address, 120)
 
@@ -120,10 +124,11 @@ def _get_datetime_object(date):
 
 def parse_args():
     arg_parser = argparse.ArgumentParser(description='Script which using rsync-backup to make backups. It is rsync with --archive mode, but with some additionally functions')
-    arg_parser.add_argument('-u', '--user', help='In case when -d/--dir argument will have remote directories', type=str)
+    arg_parser.add_argument('-u', '--user', help='User to establish remote connection via ssh. Need to used if -d/--dirs argument has at least one remote directory', type=str)
     arg_parser.add_argument('-d', '--dirs', nargs='+', help='Argument to specify source directories and one target directory, last one entered will be target directory. '
                                                             'For example if you enter: {-d dir1 dir2 dir3} script (actually rsync) will read data from dir1, dir2 and save it to dir3.'
-                                                            'Rsync is enabled to --archive mode, so all data recursively will be copied. It is necessary to provide at least 2 directories', type=str, required=True)
+                                                            'Rsync is enabled to --archive mode, so all data recursively will be copied. It is necessary to provide at least 2 directories. '
+                                                            'If you want provide remote directory, type it in format {-d ip_address:dirs} and user by -u/--user argument', type=str, required=True)
     arg_parser.add_argument('-n', '--numBackup', help='Number of max backup directories, if there will be more than specified number the oldest backup will be deleted, default value is 5', type=int, default=5)
     return arg_parser.parse_args()
 

@@ -14,7 +14,7 @@ def clear_logs(src_path):
     try:
         files_in_src_path = os.listdir(src_path)  # list all files from dir
     except FileNotFoundError:
-        logging.error(f'directory named "{src_path}" was not found')
+        logging.error(f'directory named "{src_path}" not found')
         print(os.path.basename(__file__) + ': an error has occurred, check logs for more information')
         return
     for src_file in files_in_src_path:
