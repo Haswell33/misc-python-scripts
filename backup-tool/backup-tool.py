@@ -38,10 +38,10 @@ def make_backup(directories, user, max_num_of_backups):
             ssh_conn = True
             break
     send_rsync(directories, user, ssh_conn)
-    logging.debug(f'backup "{dest_dir}/{backup_filename}" completed successfully')
+    logging.debug(f'backup complete "{dest_dir}/{backup_filename}"')
     if not re.match(regex_pattern, dest_dir):
         if _get_num_of_backups(dest_dir) > max_num_of_backups:
-            logging.info(f'num of backups exceeded, current amount is greater than {max_num_of_backups}, oldest directory will be deleted')
+            logging.info(f'num of backups exceeded, current amount is greater than {max_num_of_backups}, oldest backup will be deleted')
             remove_oldest_backup(dest_dir)
     else:
         logging.info('checking num of backups skipped, destination directory is remote host')
@@ -67,13 +67,12 @@ def remove_oldest_backup(dest_dir):
             oldest_backup = file
             break
     try:
-        logging.info(f'oldest backup: "{dest_dir}/{oldest_backup}"')
         if re.match(regex_pattern, oldest_backup):
-            logging.info(f'deleting oldest backup in progress "{dest_dir}/{oldest_backup}"...')
+            logging.info(f'oldest backup deleting in progress "{dest_dir}/{oldest_backup}"...')
             shutil.rmtree(f'{dest_dir}/{oldest_backup}')
-            logging.debug(f'deleting oldest backup "{dest_dir}/{oldest_backup}" completed successfully')
+            logging.debug(f'oldest backup deleted "{dest_dir}/{oldest_backup}"')
         else:
-            logging.warning('directory did not deleted, name of directory is not usual for backup filename')
+            logging.warning(f'directory not deleted, name of "{dest_dir}/{oldest_backup}" is not usual for backup filename')
     except PermissionError as error_msg:
         logging.error(f'PermissionError: {str(error_msg)}, can not delete oldest backup directory')
         print(f'{os.path.basename(__file__)}: an error has occurred, check {LOG_FILE} for more information')
@@ -84,6 +83,7 @@ def host_is_up(ip_address, timeout):
     start_timestamp = _get_datetime_object(datetime.now().strftime('%H:%M:%S'))
     end_timestamp = start_timestamp + relativedelta(seconds=+timeout)  # setting up timeout
     waiting = True
+    logging.info('checking if host is up...')
     while waiting:
         response = os.popen(f'ping -c 1 {ip_address}').read()  # for linux -c, for windows -n
         if 'Destination host unreachable' in response or 'Request timed out' in response or 'Received = 0' in response:
@@ -94,7 +94,6 @@ def host_is_up(ip_address, timeout):
                 logging.error(f'Request timed out, {ip_address} did not response to ping in {int((end_timestamp - start_timestamp).total_seconds())} seconds')
                 return False
         else:
-            print(f'{ip_address} is up')
             logging.info(f'{ip_address} is up')
             waiting = False
     return True
@@ -102,7 +101,7 @@ def host_is_up(ip_address, timeout):
 
 def start_host(ip_address):
     os.system(f'/usr/local/bin/remote-task.py -c start -H desktop')
-    print(f'WOL packet has been sent to {ip_address} to turn on host')
+    logging.info(f'WOL packet has been sent to {ip_address} to turn on host')
     host_is_up(ip_address, 120)
 
 
