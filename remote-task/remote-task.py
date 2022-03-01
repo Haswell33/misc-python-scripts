@@ -8,10 +8,11 @@ import os
 import struct
 import socket
 import psycopg2
+import re
 from termcolor import colored
 
-LOG_FILE = f'/var/log/{os.path.basename(__file__).split(".")[0]}.log'
-# LOG_FILE = f'{os.path.abspath(os.path.dirname(__file__))}/logs/{os.path.basename(__file__).split(".")[0]}.log'
+#LOG_FILE = f'/var/log/{os.path.basename(__file__).split(".")[0]}.log'
+LOG_FILE = f'{os.path.abspath(os.path.dirname(__file__))}/logs/{os.path.basename(__file__).split(".")[0]}.log'
 PASSWORD_FILE = '/root/.ssh/.password'
 
 logging.basicConfig(filename=LOG_FILE, format='%(asctime)s | %(name)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
@@ -28,7 +29,7 @@ def start(hostname):  # Wake On Lan packet
     wol_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # broadcast it to the LAN.
     wol_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     wol_sock.sendto(send_data, (broadcast, 7))
-    logging.debug(f'WOL packet has been sent to {hostname}')
+    logging.debug(f'{hostname} has been started using WOL packet')
     print(f'{hostname} has been started')
 
 
@@ -70,11 +71,21 @@ def restart(hostname):
 
 def status(hostname):  # just ping to host
     ip_address = get_ip_address(hostname)
-    response = os.popen(f'ping -c 4 {ip_address}').read()  # for linux -c, for windows -n
-    if 'Destination host unreachable' in response or 'Request timed out' in response or 'Received = 0' in response:
-        print(hostname + ': ' + colored('OFF', 'red'))
+    response = os.popen(f'ping -c 2 {ip_address}').read()  # for linux -c, for windows -n
+    if re.search('[Dd]estination [Hh]ost [Uu]nreachable', response) or \
+       re.search('[Rr]equest [Tt]imed [Oo]ut', response) or \
+       re.search('[Rr]eceived = 0', response) or \
+       re.search('0 [Rr]eceived', response):
+        print(colored('OFF', 'red') + ' ' + hostname)
+        '''user_input = input(f'turn on {hostname}? [Y/n]')
+        if user_input == 'Y':
+            start(hostname)
+        elif user_input == 'n':
+            pass
+        else:
+            user_'''
     else:
-        print(hostname + ': ' + colored('ON', 'green'))
+        print(colored('ON', 'green') + ' ' + hostname)
 
 
 def get_db_connection():  # psql database connection

@@ -86,7 +86,10 @@ def host_is_up(ip_address, timeout):
     logging.info('checking if host is up...')
     while waiting:
         response = os.popen(f'ping -c 1 {ip_address}').read()  # for linux -c, for windows -n
-        if 'Destination host unreachable' in response or 'Request timed out' in response or 'Received = 0' in response:
+        if re.search('[Dd]estination [Hh]ost [Uu]nreachable', response) or \
+           re.search('[Rr]equest [Tt]imed [Oo]ut', response) or \
+           re.search('[Rr]eceived = 0', response) or \
+           re.search('0 [Rr]eceived', response):
             time.sleep(1)
             print(f'waiting for host...')
             if datetime.now().strftime("%H:%M:%S") >= end_timestamp.strftime("%H:%M:%S"):
