@@ -5,13 +5,10 @@ import logging.config
 import argparse
 import os
 from getpass import getpass
-
-# LOG_FILE = f'/var/log/{os.path.basename(__file__).split(".")[0]}.log'
 import subprocess
 
+# LOG_FILE = f'/var/log/{os.path.basename(__file__).split(".")[0]}.log'
 LOG_FILE = f'{os.path.abspath(os.path.dirname(__file__))}/logs/{os.path.basename(__file__).split(".")[0]}.log'
-USER_TYPE_LIST = {'internal': 'ssh-int',
-                  'external': 'ssh-ext'}
 INT_USER_CONST = {
     'name': 'internal',
     'group': 'ssh-int',
@@ -24,25 +21,36 @@ EXT_USER_CONST = {
     'port': '2222',
     'dir': '/storage/sftp'
 }
+DEFAULTS = {
+    'base-dir': '/storage/ssd/sftp',
+    'base-group': 'sftp-users',
+    'domain-group': 'domain-users',
+    'int-name': 'internal',
+    'int-group': 'ssh-int',
+    'int-port': 22,
+    'ext-name': 'external',
+    'ext-group': 'ssh-ext',
+    'ext-port': 2222
+}
 LOCATION_TYPE_LIST = {'default': '/storage/ssd/sftp',
                       'domain': '/storage/ssd/domain'}
 logging.basicConfig(filename=LOG_FILE, format='%(asctime)s | %(name)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
 
 
 def create_sftp_account():
-    print(EXT_USER_CONST.get('title'))
     username = input(f'Enter a username for new SFTP account:\n')
+    groups =
     user_type = input(f'Choose user type (internal or external), for more information {os.path.basename(__file__)} -h:\n')
-    while user_type not in [EXT_USER_CONST.get('name'), INT_USER_CONST.get('name')]:
+    while user_type not in [DEFAULTS.get('int-name'), DEFAULTS.get('ext-name')]:
         user_type = input('Choice does not match with available options, choose user type again:\n')
-    if user_type == EXT_USER_CONST.get('name'):  # external user type
+    if user_type == DEFAULTS.get('ext-name'):  # external user type
         password = getpass(prompt='Enter the password: ')
         password_retyped = getpass(prompt='Retype password: ')
         while password != password_retyped:
             print('Password does not match. Try again')
             password = getpass(prompt='Enter the password: ')
             password_retyped = getpass(prompt='Retype password: ')
-        print(f'useradd -M --shell /bin/false -p {password} -G {EXT_USER_CONST.get("group")},sftp-users {username}')
+        print(f'useradd -M --shell /bin/false -p {password} -G {DEFAULTS.get("ext-group")} {username}')
         print(f'mkdir -p ')
 
 
@@ -59,9 +67,9 @@ def get_sftp_users_list():
     int_users = (int_output.rsplit(':', 1)[-1]).split(',')
     print('name\t\t\ttype\t\t\tlisten_port')
     for user in ext_users:
-        print(f'{user}\t\t\t{EXT_USER_CONST.get("title")}\t\t\t{EXT_USER_CONST.get("port")}')
+        print(f'{user}\t\t\t{DEFAULTS.get("ext-name")}\t\t\t{DEFAULTS.get("port")}')
     for user in int_users:
-        print(f'{user}\t\t\t{INT_USER_CONST.get("title")}\t\t\t{INT_USER_CONST.get("port")}')
+        print(f'{user}\t\t\t{DEFAULTS.get("title")}\t\t\t{DEFAULTS.get("port")}')
 
 
 def parse_args():
