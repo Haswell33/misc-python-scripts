@@ -39,14 +39,14 @@ def make_backup(directories, user, max_num_of_backups):
                 start_host(ip_address)
             ssh_conn = True
             break
-    send_rsync(directories, user, ssh_conn)
-    logging.debug(f'backup complete "{dest_dir}/{backup_filename}"')
     if not re.match(regex_pattern, dest_dir):
         if _get_num_of_backups(dest_dir) > max_num_of_backups:
             logging.info(f'num of backups exceeded, current amount is greater than {max_num_of_backups}, oldest backup will be deleted')
             remove_oldest_backup(dest_dir)
     else:
         logging.info('checking num of backups skipped, destination directory is remote host')
+    send_rsync(directories, user, ssh_conn)
+    logging.debug(f'backup complete "{dest_dir}/{backup_filename}"')
     os.system(f'chown -R {STORAGE_USER} {dest_dir}/{backup_filename}')
     curr_timestamp = datetime.now().strftime('%Y%m%d%H%M.%S')
     os.system(f'touch -t {curr_timestamp} {directories[1]}')
