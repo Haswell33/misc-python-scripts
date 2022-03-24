@@ -10,9 +10,10 @@ import argparse
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-LOG_FILE = f'/var/log/{os.path.basename(__file__).split(".")[0]}.log'
-# LOG_FILE = f'{os.path.abspath(os.path.dirname(__file__))}/logs/{os.path.basename(__file__).split(".")[0]}.log'
+# LOG_FILE = f'/var/log/{os.path.basename(__file__).split(".")[0]}.log'
+LOG_FILE = f'{os.path.abspath(os.path.dirname(__file__))}/logs/{os.path.basename(__file__).split(".")[0]}.log'
 PASSWORD_FILE = '/root/.ssh/.password'
+MOUNT_POINT = '/storage/raid1'
 STORAGE_USER = 'storage'
 
 logging.basicConfig(filename=LOG_FILE, format='%(asctime)s | %(name)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
@@ -20,8 +21,10 @@ logging.basicConfig(filename=LOG_FILE, format='%(asctime)s | %(name)s | %(leveln
 
 def make_backup(directories, user, max_num_of_backups):
     regex_pattern = r'^(\d{3}.\d{3}.\d{1}.\d{2,3})'
+    curr_timestamp = datetime.now().strftime('%Y%m%d%H%M.%S')
     ssh_conn = False
     dest_dir = directories[-1]
+    check_if_md0_mounted()
     backup_filename = f'backup-{_get_today()}'
     directories[-1] += '/' + backup_filename
     logging.debug(f'backup in progress "{dest_dir}/{backup_filename}"...')
@@ -46,6 +49,7 @@ def make_backup(directories, user, max_num_of_backups):
     send_rsync(directories, user, ssh_conn)
     logging.debug(f'backup complete "{dest_dir}/{backup_filename}"')
     os.system(f'chown -R {STORAGE_USER} {dest_dir}/{backup_filename}')
+    os.system(f'touch -t {curr_timestamp} {dest_dir}/{backup_filename}')  # change mtime on backup creation date
 
 
 def send_rsync(dirs, user, ssh_conn):
@@ -106,6 +110,13 @@ def start_host(ip_address):
     os.system(f'/usr/local/bin/remote-task.py -c start -H desktop')
     logging.info(f'WOL packet has been sent to {ip_address} to turn on host')
     host_is_up(ip_address, 120)
+
+
+def check_if_md0_mounted():
+    response = os.popen(f'mountpoint {MOUNT_POINT}')
+    if 'not a mountpoint' in response:
+        logging.error(f'{MOUNT_POINT} not mounted, backup creation aborted')
+        sys.exit(0)
 
 
 def _get_num_of_backups(dest_dir):  # count number of existing files in destination folder
