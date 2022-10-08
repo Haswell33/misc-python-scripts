@@ -7,16 +7,18 @@ import time
 import shutil
 import logging
 import argparse
+from ipaddress import ip_address
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-# LOG_FILE = f'/var/log/{os.path.basename(__file__).split(".")[0]}.log'
-LOG_FILE = f'{os.path.abspath(os.path.dirname(__file__))}/logs/{os.path.basename(__file__).split(".")[0]}.log'
-PASSWORD_FILE = '/root/.ssh/.password'
-MOUNT_POINT = '/storage/raid1'
-STORAGE_USER = 'storage'
+DEFAULTS = {
+    'LOG_FILE': f'{os.path.abspath(os.path.dirname(__file__))}/logs/{os.path.basename(__file__).split(".")[0]}.log',
+    'PASSWORD_FILE': '/root/.ssh/.password',
+    'MOUNT_POINT': '/storage/raid1',
+    'STORAGE_USER': 'storage'
+}
 
-logging.basicConfig(filename=LOG_FILE, format='%(asctime)s | %(name)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
+logging.basicConfig(filename=DEFAULTS['LOG_FILE'], format='%(asctime)s | %(name)s | %(levelname)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
 
 
 def make_backup(directories, user, max_num_of_backups):
@@ -24,7 +26,7 @@ def make_backup(directories, user, max_num_of_backups):
     curr_timestamp = datetime.now().strftime('%Y%m%d%H%M.%S')
     ssh_conn = False
     dest_dir = directories[-1]
-    check_if_md0_mounted()
+    # check_if_md0_mounted()
     backup_filename = f'backup-{_get_today()}'
     directories[-1] += '/' + backup_filename
     logging.debug(f'backup in progress "{dest_dir}/{backup_filename}"...')
@@ -79,7 +81,7 @@ def remove_oldest_backup(dest_dir):
             logging.warning(f'directory not deleted, name of "{dest_dir}/{oldest_backup}" is not usual for backup filename')
     except PermissionError as error_msg:
         logging.error(f'PermissionError: {str(error_msg)}, can not delete oldest backup directory')
-        print(f'{os.path.basename(__file__)}: an error has occurred, check {LOG_FILE} for more information')
+        print(f'{os.path.basename(__file__)}: an error has occurred, check {DEFAULTS["LOG_FILE"]} for more information')
         return
 
 
@@ -111,13 +113,13 @@ def start_host(ip_address):
     logging.info(f'WOL packet has been sent to {ip_address} to turn on host')
     host_is_up(ip_address, 120)
 
-
+'''
 def check_if_md0_mounted():
     response = os.popen(f'mountpoint {MOUNT_POINT}')
     if 'not a mountpoint' in response:
         logging.error(f'{MOUNT_POINT} not mounted, backup creation aborted')
         sys.exit(0)
-
+'''
 
 def _get_num_of_backups(dest_dir):  # count number of existing files in destination folder
     count = 0
@@ -137,19 +139,49 @@ def _get_datetime_object(date):
 
 def parse_args():
     arg_parser = argparse.ArgumentParser(description='Script which using rsync-backup to make backups. It is rsync with --archive mode, but with some additionally functions')
+    arg_parser.add_argument('-s', '--ssh', action='store_true', help='SSH connection by rsync')
+    arg_parser.add_argument('-d', '--daemon', action='store_true', help='Rsync daemon connection')
+    arg_parser.add_argument('-l', '--local', action='store_true', help='if local connection')
+    arg_parser.add_argument('-i', '--ip_address', type=ip_address, help='ip address')
     arg_parser.add_argument('-u', '--user', help='User to establish remote connection via ssh. Need to used if -d/--dirs argument has at least one remote directory', type=str)
-    arg_parser.add_argument('-d', '--dirs', nargs='+', help='Argument to specify source directories and one target directory, last one entered will be target directory. '
+    arg_parser.add_argument('-D', '--dirs', nargs='+', help='Argument to specify source directories and one target directory, last one entered will be target directory. '
                                                             'For example if you enter: {-d dir1 dir2 dir3} script (actually rsync) will read data from dir1, dir2 and save it to dir3.'
                                                             'Rsync is enabled to --archive mode, so all data recursively will be copied. It is necessary to provide at least 2 directories. '
                                                             'If you want provide remote directory, type it in format {-d ip_address:dirs} and user by -u/--user argument', type=str, required=True)
-    arg_parser.add_argument('-n', '--numBackup', help='Number of max backup directories, if there will be more than specified number the oldest backup will be deleted, default value is 5', type=int, default=5)
+    arg_parser.add_argument('-n', '--num_backup', help='Number of max backup directories, if there will be more than specified number the oldest backup will be deleted, default value is 5', type=int, default=5)
     return arg_parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    if len(args.dirs) < 2:
-        print(f'{os.path.basename(__file__)}: expected more values in -d/--dirs argument, minimum value is at least 2 directories ')
-        sys.exit(0)
-    make_backup(args.dirs, args.user, args.numBackup)
+    try:
+        if len(args.dirs) < 2:
+            raise ValueError('expected more values in -d/--dirs argument, minimum value is at least 2 directories')
+        elif args.ssh:
+            if args.ip_address is None:
+                raise ValueError('-i/--ip_address arg expected if SSH connection, backup creation aborted')
+            elif args.user is None:
+                raise ValueError('-u/--user arg expected if SSH connection, backup creation aborted')
+        elif args.daemon:
+            
+    except ValueError as e:
+        logging.error(f'{os.path.basename(__file__)}:  {e}')
+        print(f'{os.path.basename(__file__)}:  {e}')
+    elif args.local:
+        raise TypeError('dasdddsads')
+    elif args.ssh:
+        if args.ip_address is None:
+            #raise_error('-i/--ip_address arg expected if SSH connection, backup creation aborted'')
+            print(f'{os.path.basename(__file__)}: -i/--ip_address arg expected if SSH connection, backup creation aborted')
+            logging.error(f'-i/--ip_address arg expected if SSH connection, backup creation aborted')
+            sys.exit(0)
+        elif args.user is None:
+            print(f'{os.path.basename(__file__)}: -u/--user arg expected if SSH connection, backup creation aborted')
+            logging.error(f'-u/--user arg expected if SSH connection, backup creation aborted')
+            sys.exit(0)
+    make_backup(args.user, args.ip_address, args.dirs, args.num_backup, args.ssh, args.daemon, args.local)
 
+    # make_backup(args.dirs, args.user, args.numBackup)
+
+def raise_error():
+    pass
