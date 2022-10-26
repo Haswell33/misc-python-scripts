@@ -169,7 +169,7 @@ if __name__ == "__main__":
         print(f'{os.path.basename(__file__)}:  {e}')
     elif args.local:
         raise TypeError('dasdddsads')
-    elif args.ssh:d
+    elif args.ssh:
         if args.ip_address is None:
             #raise_error('-i/--ip_address arg expected if SSH connection, backup creation aborted'')
             print(f'{os.path.basename(__file__)}: -i/--ip_address arg expected if SSH connection, backup creation aborted')
