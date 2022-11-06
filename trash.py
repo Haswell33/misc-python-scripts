@@ -247,3 +247,200 @@ if __name__ == "__main__":
     # decode_binary_file(4)
     #test = 'test/test/test/test/Kontraktorzy'
     #print(test.rsplit('/', 1)[0])
+
+
+
+def get_ip_address(name):
+    return send_db_request('ip_address', name)
+
+
+def get_mac_address(name):
+    return send_db_request('mac_address', name)
+
+
+def get_broadcast_address(name):
+    return send_db_request('broadcast', name)
+
+
+def get_system(name):
+    return send_db_request('system', name)
+
+
+def get_ssh_user(name):
+    return send_db_request('ssh_user', name)
+
+
+def send_db_request(col_name, hostname):
+    db = get_db_connection()
+    cursor = db.cursor()
+    cursor.execute(f"SELECT {col_name} FROM public.hosts WHERE name='{hostname}'")
+    results = cursor.fetchone()
+    try:
+        if results[0] is None or not results:
+            print(f'{os.path.basename(__file__)}: an error has occurred, check "{LOG_FILE}" for more information')
+            logging.error(f'"{hostname}" has NULL value in "{col_name}" column')
+            sys.exit(0)
+    except TypeError:
+        print(f'{os.path.basename(__file__)}: an error has occurred, check "{LOG_FILE}" for more information')
+        logging.error(f'not found hostname "{hostname}" in database')
+        sys.exit(0)
+    return results[0]
+
+
+def get_hostname_list():
+    db = get_db_connection()
+    cursor = db.cursor()
+    cursor.execute("SELECT name FROM public.hosts")
+    results = cursor.fetchall()
+    print('available hosts:')
+    for result in results:
+        print(f' - {result[0]}')
+
+
+'''
+import logging
+import logging.config
+import configparser
+import sys
+import os
+import re
+
+# script desc: validate some things before running scripts, existence of must have files etc.
+# input params: validator.py {filename}
+
+CONFIG = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+CONFIG_LOG = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())  # extended interpolation changes default sign to interpolate in strings (% -> $)
+
+
+def validate_script_default_method(script_filename, config_filename):  # default script validation functions (script_filename = e.g. log-cleaner.py)
+    if script_filename != 'None':  # if any known script executed a validator.py perform functions under 'if'
+        check_if_log_config_file_exists(script_filename.split('.')[0])  # checks existence and finally loads, deletes .py from scriptname
+        logging.info('"' + sys.argv[0] + '" starting')
+        return_to_parent_script(script_filename, config_filename)
+    else:  # if var with parent script filename(script_filename) has unknown value for validator, write a error in log
+        logging.config.fileConfig(path['config'] + filename['validator_logging_config'])  # download the config file to logger
+        logging.error('invalid filename of parent script (sys.argv[1]) while executing "' + sys.argv[0] + '", validation failed')
+
+
+def check_if_log_config_file_exists(parent_script_name):  # fun checks if log config file exists, if not, fun creates a dir (script_file example = filename.py)
+    logging_config_filename = path['config'] + filename[parent_script_name + '_logging_config']
+    try:
+        with open(logging_config_filename):
+            pass
+    except IOError:
+        log_filename = str(filename[parent_script_name])
+        CONFIG_LOG['loggers'] = {'keys': 'root'}  # performing .ini file below:
+        CONFIG_LOG['handlers'] = {'keys': 'consoleHandler'}
+        CONFIG_LOG['formatters'] = {'keys': 'default'}
+        CONFIG_LOG['logger_root'] = {'level': 'NOTSET',
+                                     'handlers': 'consoleHandler'}
+        CONFIG_LOG['handler_consoleHandler'] = {'class': 'FileHandler',
+                                                'level': 'DEBUG',
+                                                'formatter': 'default',
+                                                'args': "('" + path['logs'] + log_filename + ".log', 'a')"}
+        CONFIG_LOG['formatter_default'] = {'format': '%(asctime)s | %(levelname)s | %(message)s',
+                                           'datefmt': '%d-%m-%Y %H:%M:%S',
+                                           'class': 'logging.Formatter'}
+        with open(logging_config_filename, 'w') as input_file:  # write lists to file
+            CONFIG_LOG.write(input_file)
+    try:
+        logging.config.fileConfig(path['config'] + filename[parent_script_name + '_logging_config'])  # download the config file to logger, error occurs even when log config file cant find pointer /logs dir
+    except FileNotFoundError:
+        check_if_log_dir_exists()
+        logging.config.fileConfig(path['config'] + filename[parent_script_name + '_logging_config'])  # download the config file to logger
+        logging.debug(path['logs'] + ' directory was not found, log directory has been created')
+        logging.debug('"' + logging_config_filename + '" was not found, log config file with default params has been created')
+
+
+def check_if_log_dir_exists():  # checks if dir for logs exists, if not, function creates a folder
+    if os.path.exists(path['logs']):
+        pass
+    else:
+        os.mkdir(path['logs'])
+
+
+def check_if_config_file_exists():  # checks if config file for scripts exists(global variables, ftp servers, db etc.), if not, function creates a file, finally load a config file
+    config_filename = 'config/config.ini'  # default path to config file
+    try:
+        with open(config_filename):
+            CONFIG.read(config_filename)
+    except IOError:
+        if not os.path.exists('config'):  # checks existence of /config dir
+            os.mkdir('config')
+        else:
+            pass
+        CONFIG['GENERAL'] = {'log_file_line_limit': '10000',  # performing .ini file below:
+                              'backup_files_limit': '10',
+                              'broadcast': '192.168.0.255',
+                              'sender_email': 'nomailhere',
+                              'sender_email_password': 'test',
+                              'send_msg_to_host-port': '13000',
+                              'send_msg_to_host-timeout_time': '1024'}
+        CONFIG['PATH'] = {'base_backup': 'backups/backups_',
+                          'config': 'config/',
+                          'logs': 'logs/'}
+        CONFIG['FILENAME'] = {
+                            # filenames of scripts
+                            'validator': 'validator.py',
+                            'backup-tool': 'backup-tool.py',
+                            'log-cleaner': 'log-cleaner.py',
+                            'remote-task': 'remote-task.py',
+                            'google-ads-invoice': 'google-ads-invoice.py',
+                            # filenames of log config files
+                            'validator_logging_config': 'validator-logging.ini',
+                            'backup-tool_logging_config': 'backup-tool-logging.ini',
+                            'log-cleaner_logging_config': 'log-cleaner-logging.ini',
+                            'remote-task_logging_config': 'remote-task-logging.ini',
+                            'google-ads-invoice_logging_config': 'google-ads-invoice-logging.ini'}
+        CONFIG['HOST_MAC_ADDRESS'] = {'raspberry': 'E4:5F:01:4B:4D:B3',
+                                      'desktop': '00:D8:61:9D:D8:1A',
+                                      'laptop': 'BC:A8:A6:F4:4B:EC',
+                                      'smartphone': 'A2:41:E9:F4:A2:9F',
+                                      'printer': 'F8:DA:0C:7A:B2:DA'}
+        CONFIG['HOST_IP_ADDRESS'] = {'raspberry': '192.168.0.100',
+                                     'desktop': '192.168.0.101',
+                                     'laptop': '192.168.0.102',
+                                     'smartphone': '192.168.0.103',
+                                     'printer': '192.168.0.104']
+        #CONFIG['MESSEGE'] = {'inovice_sent': 'Google Ads invoice from previous month has been attached to this mail'}
+        with open(config_filename, 'w') as input_file:  # write lists to file
+            CONFIG.write(input_file)
+        logging.info('"' + config_filename + '" was not found, config file with default params has been created')  # not catched by log file
+        CONFIG.read(config_filename)
+    return config_filename
+
+
+def return_to_parent_script(script_file, config_file):  # back to parent script with new additional params
+    list_of_params = []
+    for param in range(1, len(sys.argv)):
+        list_of_params.append(sys.argv[param])
+    logging.info('"' + filename['validator'] + '" finished his work, "' + script_file + '" starting')
+    logging.info('loaded log config file from: "' + str(path['config'] + filename[script_file.split('.')[0] + '_logging_config']) + '"')
+    logging.info('loaded config file from: "' + config_file + '"')
+    try:
+        logging.info("input of sys.argv: ['" + str(get_num_of_params(list_of_params)).replace(' ', "', '") + "-c,' '" + config_file + "', '-v','validated']")
+        with open(script_file):
+            os.system('py ' + str(get_num_of_params(list_of_params)) + ' -c ' + config_file + ' -v validated')
+    except IOError as error_msg:
+        logging.error(error_msg)
+
+
+def get_num_of_params(list_of_params):
+    output_string = ''
+    for count in range(0, len(list_of_params)):  # from 1, because sys.argv[0] is filename
+        output_string += list_of_params[count] + ' '
+    return output_string
+
+
+config_path = check_if_config_file_exists()
+filename = CONFIG['FILENAME']
+path = CONFIG['PATH']
+
+if __name__ == '__main__':
+    script_path = sys.argv[1]
+    filename_match = re.search('.py', script_path)  # check if given param is name of script
+    if filename_match:
+        validate_script_default_method(script_path, config_path)
+    else:  # no script name on input, so put 'None' to function in signature
+        validate_script_default_method('None', config_path)
+'''
