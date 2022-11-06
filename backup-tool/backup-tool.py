@@ -173,10 +173,11 @@ class Backup:
         oldest_backup = None
         for file in files:
             if os.path.isdir(file):  # looking for first dir in array, so it will find the oldest dir
-                oldest_backup = os.path.join(self.parent_dir, file)
+                oldest_backup = file
+                break
         try:
             regex_pattern = r'^backup-[0-9]{4}-[0-9]{2}-[0-9]{2}'  # to avoid deleting unexpected directory when user provide wrong path
-            logging.info(f'max num of backups exceeded, deleting oldest backup "{oldest_backup}" in progress...')
+            logging.info(f'max ({self.max}) num of backups exceeded, deleting oldest backup "{oldest_backup}" in progress...')
             if re.match(regex_pattern, oldest_backup):
                 shutil.rmtree(oldest_backup)
                 logging.debug(f'oldest backup "{oldest_backup}" has been deleted')
@@ -190,6 +191,7 @@ class Backup:
         timestamp = datetime.now().strftime('%Y%m%d%H%M.%S')
         os.system(f'touch -t {timestamp} {self.dest_dir}')
         os.system(f'chown -R {self.owner}:{self.owner} {self.dest_dir}')
+        os.system(f'chmod 440 {self.dest_dir}')
 
     def set_cmd(self):
         logging.debug(f'cmd: {self.cmd if self.password is None else self.cmd.replace(self.password, "****")}')
@@ -244,22 +246,28 @@ class FileBackup(Backup):
 
     def set_cmd(self):  # TO DO (add exclude dirs)
         log_file = f'--info=progress2 > {os.path.join(self.dest_dir, "rsync.log")}'
+        base_cmd = 'rsync -altv'
         if self.type == LOCAL_BACKUP:
             source_dirs = ' '.join(directory for directory in self.source_dirs)
-            self.cmd = f'rsync -altv {source_dirs} {self.dest_dir} {log_file}'
+            if self.excluded_dirs:
+                excluded_dir = ' '.join(directory for directory in self.excluded_dirs)
+                self.cmd = f'{base_cmd} --exclude "{excluded_dir}" {source_dirs} {self.dest_dir} {log_file}'
+            else:
+                self.cmd = f'{base_cmd} {source_dirs} {self.dest_dir} {log_file}'
         elif self.type == SSH_BACKUP:  # -l to copy links, -v verbosity in log, -t timestamps in log, -a archive mode is equivalent to  -rlptgoD, so recurse mode is on etc.
             source_dirs = ' '.join(f'{self.host.ip_address}:{directory}' for directory in self.source_dirs)
             if self.no_password:
                 password_arg = f'-f {self.password_file}'
             else:
                 password_arg = f'-p {self.password}'
-            self.cmd = f'rsync -altv --rsh="sshpass -P assphrase {password_arg} ssh -l {self.user}" {source_dirs} {self.dest_dir} {log_file}'
+            self.cmd = f'{base_cmd} --rsh="sshpass -P assphrase {password_arg} ssh -l {self.user}" {source_dirs} {self.dest_dir} {log_file}'
         elif self.type == DAEMON_BACKUP:
             source_dirs = ' '.join(f'rsync://{self.user}@{self.host.ip_address}{directory}' for directory in self.source_dirs)
             if self.no_password:
-                self.cmd = f'rsync -altv --password-file="{self.password_file}"'
+                self.cmd = f'{base_cmd} --password-file="{self.password_file}"'
             else:
-                self.cmd = f'RSYNC_PASSWORD={self.password} rsync -altv'
+                self.cmd = f'RSYNC_PASSWORD={self.password} {base_cmd}'
+
             self.cmd = f'{self.cmd} {source_dirs} {self.dest_dir} {log_file}'
         super().set_cmd()
 
