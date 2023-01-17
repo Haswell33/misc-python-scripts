@@ -35,6 +35,7 @@ class MailManager:
         pass
 
     def update_user(self, selector):
+        print(test)
         pass
 
     def get_domains(self):
