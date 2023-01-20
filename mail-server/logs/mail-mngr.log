@@ -19,3 +19,21 @@
 2023-01-19 20:47:39 root DEBUG execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.orgp.pl%'
 2023-01-19 20:48:11 root DEBUG execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.orgp.pl%'
 2023-01-19 20:48:14 root DEBUG execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.org.pl%'
+2023-01-20 18:17:47 root DEBUG execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.org.pl%'
+2023-01-20 18:18:17 root DEBUG execute SELECT u.id, CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.org.pl%'
+2023-01-20 18:21:54 root DEBUG execute SELECT u.id, CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.orgddd.pl%'
+2023-01-20 18:22:04 root DEBUG execute SELECT u.id, CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.orgddd.pl%'
+2023-01-20 18:22:08 root DEBUG execute SELECT u.id, CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.orgddd.pl%'
+2023-01-20 18:30:36 root DEBUG execute SELECT d.id, d.name, d.active FROM domains d
+2023-01-20 18:32:06 root DEBUG execute SELECT u.id, CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id
+2023-01-20 18:32:26 root DEBUG execute SELECT d.id, d.name, d.active FROM domains d
+2023-01-20 18:37:29 root DEBUG execute SELECT f.id, CONCAT(u.name, '@', d.name), f.destination, f.active FROM forwardings f JOIN users u ON u.ID = f.user_id JOIN domains d ON d.id = u.domain_id
+2023-01-20 18:41:38 root DEBUG execute SELECT f.id, CONCAT(u.name, '@', d.name), f.destination, f.active FROM forwardings f JOIN users u ON u.ID = f.user_id JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%test%'
+2023-01-20 18:41:46 root DEBUG execute SELECT d.id, d.name, d.active FROM domains d
+2023-01-20 18:59:30 root ERROR mail-mngr.py: Password file "{'C:\\Users\\Karol Siedlaczek\\.my.cnf'}" does not exist, use -P/--password to input password as argument or create this file, see details how to create this file in MySQL docs
+2023-01-20 19:00:07 root ERROR mail-mngr.py: Password file "C:\Users\Karol Siedlaczek\.my.cnf" does not exist, use -P/--password to input password as argument or create this file, see details how to create this file in MySQL docs
+2023-01-20 19:06:13 root DEBUG execute SELECT d.id, d.name, d.active FROM domains d
+2023-01-20 19:08:52 root DEBUG execute SELECT d.id, d.name, d.active FROM domains d
+2023-01-20 19:09:09 root DEBUG execute SELECT d.id, d.name, d.active FROM domains d
+2023-01-20 19:09:19 root DEBUG execute SELECT d.id, d.name, d.active FROM domains d
+2023-01-20 19:48:51 root DEBUG execute SELECT d.id, d.name, d.active FROM domains d
