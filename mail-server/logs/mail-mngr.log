@@ -1,3 +1,21 @@
 2023-01-17 20:20:13 root ERROR mail-mngr.py: 2003: Can't connect to MySQL server on 'localhost:3306' (10061 No connection could be made because the target machine actively refused it)
 2023-01-17 20:43:41 root ERROR mail-mngr.py: No result set to fetch from
 2023-01-17 20:44:39 root ERROR mail-mngr.py: No result set to fetch from
+2023-01-19 19:49:59 root ERROR mail-mngr.py: No result set to fetch from
+2023-01-19 19:50:26 root ERROR mail-mngr.py: No result set to fetch from
+2023-01-19 19:51:04 root ERROR mail-mngr.py: No result set to fetch from
+2023-01-19 19:51:07 root ERROR mail-mngr.py: No result set to fetch from
+2023-01-19 19:52:24 root ERROR mail-mngr.py: No result set to fetch from
+2023-01-19 19:58:39 root ERROR mail-mngr.py: No result set to fetch from
+2023-01-19 19:59:11 root ERROR mail-mngr.py: No result set to fetch from
+2023-01-19 20:44:12 root INFO SELECT: SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.org.pl%'
+2023-01-19 20:44:36 root INFO execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.org.pl%'
+2023-01-19 20:46:39 root INFO execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.org.pl%'
+2023-01-19 20:46:41 root INFO execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.org.pl%'
+2023-01-19 20:46:43 root INFO execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.org.pl%'
+2023-01-19 20:46:44 root INFO execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.org.pl%'
+2023-01-19 20:46:58 root DEBUG execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.org.pl%'
+2023-01-19 20:47:15 root DEBUG execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.orgp.pl%'
+2023-01-19 20:47:39 root DEBUG execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.orgp.pl%'
+2023-01-19 20:48:11 root DEBUG execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.orgp.pl%'
+2023-01-19 20:48:14 root DEBUG execute SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%siedlaczek.org.pl%'

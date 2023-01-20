@@ -4,11 +4,13 @@ import os
 import argparse
 import logging as log
 import mysql.connector
+from tabulate import tabulate
+import pandas
 from mysql.connector.errors import InterfaceError
 
-USER_LIST = 'users'
-FORWARDINGS_LIST = 'forwardings'
-DOMAINS_LIST = 'domains'
+USERS_COLUMN_NAME = 'users'
+FORWARDINGS_COLUMN_NAME = 'forwardings'
+DOMAINS_COLUMN_NAME = 'domains'
 
 DEFAULTS = {  # need to install mysql-connector-python
     'DB_HOST': 'localhost',
@@ -16,7 +18,7 @@ DEFAULTS = {  # need to install mysql-connector-python
     'DB_PORT': 3306,
     'DB_NAME': 'mail-server',
     'DB_PASSWORD_FILE': os.path.join(os.path.expanduser("~"), '.my.cnf'),
-    'LIST_CHOICES': [USER_LIST, FORWARDINGS_LIST, DOMAINS_LIST],
+    'LIST_CHOICES': [USERS_COLUMN_NAME, FORWARDINGS_COLUMN_NAME, DOMAINS_COLUMN_NAME],
     # 'LOG_FILE': os.path.abspath(os.path.join(os.sep, 'var', 'log', f'{os.path.basename(__file__).split(".")[0]}.log')),
     'LOG_FILE': f'{os.path.abspath(os.path.dirname(__file__))}/logs/{os.path.basename(__file__).split(".")[0]}.log',
 }
@@ -35,27 +37,31 @@ class MailManager:
         pass
 
     def update_user(self, selector):
-        print(test)
         pass
 
     def get_domains(self):
         pass
 
-    def get_users(self, inactive, filter):
-        cmd = 'SELECT * FROM users u'
+    def get_users(self, inactive, active, filter):
+        query = "SELECT CONCAT(u.name, '@', d.name), CONCAT(CEILING(u.quota / 1024.0 / 1024), ' MB'), u.active FROM users u"
         if filter:
-            cmd += f" JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%{filter}%'"
+            query += f" JOIN domains d ON d.id = u.domain_id WHERE d.name LIKE '%{filter}%'"
         if inactive:
-            cmd += f' {"WHERE" if "WHERE" not in cmd else "AND"} u.active = true'
-        print(cmd)
-        #database.cursor.execute(cmd)
-
-        result = database.cursor.fetchall()
-        for x in result:
-            print(x)
+            query += f' {"WHERE" if "WHERE" not in query else "AND"} u.active = false'
+        elif active:
+            query += f' {"WHERE" if "WHERE" not in query else "AND"} u.active = true'
+        result = self.database.select(query)
+        print(len(result))
+        MailManager.get_output(result, ['ID', 'E-mail', 'Quota', 'State'])
 
     def get_forwardings(self):
         pass
+
+    @staticmethod
+    def get_output(data, headers):
+        for index, row in enumerate(data):  # append id on the beginning
+            data[index] = tuple(str(index + 1)) + row
+        print(tabulate(data, headers=headers))
 
 
 class Database:
@@ -66,21 +72,28 @@ class Database:
             user=user,
             port=port,
             database=name,
-            password=password
-        )
+            password=password)
         self.cursor = self.connection.cursor()
 
-    def insert(self):
+    def run_query(self, query):
+        self.cursor.execute(query)
+        log.debug(f'execute {query}')
+
+    def insert(self, query):
+        self.run_query(query)
         pass
 
-    def update(self):
+    def update(self, query):
+        self.run_query(query)
         pass
 
-    def delete(self):
+    def delete(self, query):
+        self.run_query(query)
         pass
 
-    def select(self):
-        pass
+    def select(self, query):
+        self.run_query(query)
+        return database.cursor.fetchall()
 
 
 def parse_args():
@@ -118,10 +131,14 @@ def parse_args():
                         type=str,
                         choices=DEFAULTS['LIST_CHOICES'])
     parser.add_argument('-f', '--filter',
-                        help=f'Usable with -l/--list argument to filter output',
+                        help=f'Usable with -l/--list argument to filter output by domain',
                         type=str)
     parser.add_argument('--inactive',
-                        help=f'Usable with -l/--list argument in order to include also inactive users in output',
+                        help=f'Usable with -l/--list argument in order to get only inactive users in output',
+                        action='store_true',
+                        default=False)
+    parser.add_argument('--active',
+                        help=f'Usable with -l/--list argument in order to get only active users in output',
                         action='store_true',
                         default=False)
     return parser.parse_args()
@@ -132,7 +149,7 @@ if __name__ == "__main__":
     try:
         database = Database(args.dbHost, args.dbUser, args.dbPort, args.dbName, args.dbPasswd)
         mailManager = MailManager(database)
-        mailManager.get_users(args.inactive, args.filter)
+        mailManager.get_users(args.inactive, args.active, args.filter)
     except InterfaceError as e:  # cannot connect to mysql server
         log.error(f'{os.path.basename(__file__)}: {e}')
         print(f'{os.path.basename(__file__)}: {e}')
