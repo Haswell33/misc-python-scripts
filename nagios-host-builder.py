@@ -1,6 +1,6 @@
 if __name__ == '__main__':
     filename = 'hosts.txt'
-    host_group_name = 'waw5-fo-hosts'
+    host_group_name = 'bo-hosts'
     members = []
     with open('output.txt', 'w') as f_w:
         f_w.write('')
@@ -13,7 +13,7 @@ if __name__ == '__main__':
                 f_w.write('define host {\n')
                 f_w.write(f'\thost_name\t{host_name.lower()}\n')
                 f_w.write(f'\taddress\t\t{host_address}\n')
-                f_w.write(f'\tuse\t\tgeneric-host\n')
+                f_w.write(f'\tuse\t\t\tgeneric-host\n')
                 f_w.write('}\n\n')
             members.append(host_name.lower())
     print(','.join(members))
