@@ -1,6 +1,6 @@
 if __name__ == '__main__':
     filename = 'hosts.txt'
-    host_group_name = 'bo-hosts'
+    host_group_name = 'redir-hosts'
     members = []
     with open('output.txt', 'w') as f_w:
         f_w.write('')
@@ -20,5 +20,6 @@ if __name__ == '__main__':
     with open('output.txt', 'a') as f_w:
         f_w.write('define hostgroup {\n')
         f_w.write(f'\thostgroup_name\t{host_group_name}\n')
-        f_w.write(f'\tmembers\t\t{",".join(members)}\n')
+        string_members = "', '".join(members)
+        f_w.write(f'\tmembers\t\t\t{string_members}\n')
         f_w.write('}')

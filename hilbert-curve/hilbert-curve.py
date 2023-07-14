@@ -1,5 +1,8 @@
+#!/usr/bin/env python3
 import sys
 from turtle import *
+import matplotlib
+matplotlib.use('Agg')
 
 
 def hilbert(level, angle, step):
