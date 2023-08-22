@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 if __name__ == '__main__':
     filename = 'hosts.txt'
     host_group_name = 'redir-hosts'
@@ -20,6 +22,6 @@ if __name__ == '__main__':
     with open('output.txt', 'a') as f_w:
         f_w.write('define hostgroup {\n')
         f_w.write(f'\thostgroup_name\t{host_group_name}\n')
-        string_members = "', '".join(members)
+        string_members = ",".join(members)
         f_w.write(f'\tmembers\t\t\t{string_members}\n')
         f_w.write('}')
