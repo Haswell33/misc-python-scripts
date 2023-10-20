@@ -91,13 +91,20 @@ if __name__ == "__main__":
     for project in args.projects:
         print(f'Start iteration on {project} project')
         for port in get_ports(project):
-            ip_address = port['Fixed IP Addresses'][0]['ip_address']
-            subnet_id = port['Fixed IP Addresses'][0]['subnet_id']
             try:
-                sni = ServerNameIndication(project, ip_address, subnet_id)
-                print(f'Found {sni} as {sni.hostname}')
-                sni.save_to_csv(FILENAME)
-            except AttributeError as e:
+                try:
+                    ip_address = port['Fixed IP Addresses'][0]['ip_address']
+                except IndexError as e:
+                    raise LookupError(f'IP address is empty for {port["ID"]}')
+                subnet_id = port['Fixed IP Addresses'][0]['subnet_id']
+                try:
+                    sni = ServerNameIndication(project, ip_address, subnet_id)
+                    print(f'Found {sni} as {sni.hostname}')
+                    sni.save_to_csv(FILENAME)
+                except AttributeError as e:
+                    print(e)
+                    save_not_found_address(NOT_FOUND_FILENAME, ip_address)
+            except LookupError as e:
                 print(e)
-                save_not_found_address(NOT_FOUND_FILENAME, ip_address)
+    print(f'finish, records saved in {FILENAME}')
 
