@@ -136,7 +136,7 @@ def test_sql():
     storage_peak_samples_list = []
     storage_peak_list = []
     datetime_list = []
-    workspaces_list = ['tvnplayer', 'tvn24go', 'tvnplayerncp', 'tvn', 'TVN-Adserver', 'TVN-Xnews']
+    workspaces_list = ['tztotot', 'e_e']
     begin_date = '2021-06-01'
     end_date = '2021-07-01'
     o2billing_db = mysql.connector.connect(
