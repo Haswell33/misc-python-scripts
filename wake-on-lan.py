@@ -22,4 +22,4 @@ if __name__ == "__main__":
 	wol_sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 	wol_sock.sendto(send_data, (args.broadcast, 7))
 	
-	print(f'WOL packet has been sent to "{arg.macaddress}" to turn on host')
+	print(f'WOL packet has been sent to "{args.macaddress}" to turn on host')
