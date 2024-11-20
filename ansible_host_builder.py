@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 if __name__ == '__main__':
     with open('output.txt', 'w') as f_w:
         f_w.write('')
