@@ -7,7 +7,7 @@ import argparse
 def parse_args():
 	parser = argparse.ArgumentParser(description='Send WOL packet to host')
 	parser.add_argument('-m', '--macaddress', required=True, help='Format: XX:XX:XX:XX:XX:XX')
-	parser.add_argument('-b', '--broadcast', required=True, default='192.168.0.255')
+	parser.add_argument('-b', '--broadcast', default='192.168.0.255')
 	return parser.parse_args()
 
 if __name__ == "__main__":
