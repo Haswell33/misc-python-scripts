@@ -8,7 +8,7 @@ def parse_args():
 	parser.add_argument('-b', '--broadcast', required=True, default='192.168.0.255')
 	return parser.parse_args()
 
-if __name__ = "__main__:
+if __name__ == "__main__":
 	args = parse_args()
 
 	mac_address = args.macaddress.replace(args.macaddress[2], '')
